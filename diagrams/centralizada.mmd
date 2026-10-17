@@ -1,0 +1,11 @@
+graph TD
+    U["Usuario"] <--> O["Orquestador Central<br/>(Único punto de contacto)"]
+
+    O -->|as_tool: consultar_faqs| A1["Especialista FAQs<br/>(Conocimiento institucional)"]
+    O -->|as_tool: consultar_clima_seguridad| A2["Especialista Clima/Seguridad<br/>(Pronóstico y Veredicto)"]
+    O -->|as_tool: gestionar_agenda| A3["Especialista Agenda<br/>(Cupos y Citas)"]
+
+    A1 --> T1[("PostgreSQL + pgvector<br/>120 FAQs / HNSW")]
+    A2 --> T2["API Open-Meteo<br/>(Ventana 08-16h)"]
+    A2 --> T3["core/safety.py<br/>(Reglas deterministas)"]
+    A3 --> T4[("PostgreSQL: citas<br/>(Restricción única fecha/hora)")]

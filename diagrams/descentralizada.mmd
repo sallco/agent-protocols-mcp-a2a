@@ -1,0 +1,11 @@
+graph LR
+    U["Usuario"] <--> F["Agente FAQs<br/>(Receptor inicial)"]
+
+    F <-->|handoff: clima / viabilidad| C["Agente Clima / Seguridad"]
+    C <-->|handoff: reservar con evidencia| A["Agente Agenda / Citas"]
+    A <-->|handoff: dudas institucionales| F
+    A <-->|handoff: falta evidencia clima| C
+
+    F --> T1[("PostgreSQL + pgvector<br/>faqs")]
+    C --> T2["API Open-Meteo + safety.py"]
+    A --> T3[("PostgreSQL: citas<br/>(Guardarraíl determinista)")]

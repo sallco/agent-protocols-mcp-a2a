@@ -1,0 +1,17 @@
+graph TD
+    U["Usuario"] <--> R["Orquestador Raíz<br/>(Dirección y Síntesis)"]
+
+    R -->|as_tool| S1["Supervisor de Conocimiento<br/>(FAQs y Políticas)"]
+    R -->|as_tool| S2["Supervisor de Operaciones<br/>(Impositor de secuencia técnica)"]
+
+    S1 -->|as_tool| H1["Agente FAQs Hoja"]
+    S1 -->|as_tool| H2["Agente Políticas Hoja"]
+
+    S2 -->|as_tool: 1. Clima| H3["Agente Clima Hoja"]
+    S2 -->|as_tool: 2. Veredicto| H4["Agente Evaluación Hoja"]
+    S2 -->|as_tool: 3. Reserva| H5["Agente Agenda Hoja"]
+
+    H1 --> T1[("PostgreSQL + pgvector<br/>faqs")]
+    H3 --> T2["API Open-Meteo<br/>(08-16h)"]
+    H4 --> T3["core/safety.py<br/>(Veredicto Python)"]
+    H5 --> T4[("PostgreSQL: citas<br/>(Transaccional)")]
