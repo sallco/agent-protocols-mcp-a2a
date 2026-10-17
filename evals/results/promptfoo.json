@@ -1,0 +1,2721 @@
+{
+  "evalId": "eval-RR3-2026-10-04T06:34:08",
+  "results": {
+    "version": 3,
+    "timestamp": "2026-10-04T06:34:08.682Z",
+    "prompts": [
+      {
+        "id": "8868fc514e5f7bd1a350480c5a825cd0f5b47b6c0c8da0ca62be71158f638c23",
+        "raw": "{{query}}",
+        "label": "{{query}}",
+        "provider": "centralizada-nvidia",
+        "metrics": {
+          "score": 7,
+          "testPassCount": 7,
+          "testFailCount": 0,
+          "testErrorCount": 0,
+          "assertPassCount": 30,
+          "assertFailCount": 0,
+          "totalLatencyMs": 443260,
+          "tokenUsage": {
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "total": 0,
+            "numRequests": 7,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            },
+            "assertions": {
+              "total": 0,
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0
+              }
+            }
+          },
+          "namedScores": {},
+          "namedScoresCount": {},
+          "namedScoreWeights": {},
+          "cost": 0
+        }
+      }
+    ],
+    "results": [
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Assertion passed",
+              "assertion": {
+                "type": "javascript",
+                "value": "(() => { const r = JSON.parse(output); return typeof r.latency_ms === 'number' && r.latency_ms < 120000; })()"
+              }
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Assertion passed",
+              "assertion": {
+                "type": "contains",
+                "value": "FAQ-021"
+              }
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Assertion passed",
+              "assertion": {
+                "type": "contains",
+                "value": "100 kg"
+              }
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Assertion passed",
+              "assertion": {
+                "type": "regex",
+                "value": "Q250"
+              }
+            },
+            {
+              "assertion": {
+                "type": "factuality",
+                "value": "El peso máximo es 100 kg y entre 90 kg y 100 kg se aplica un recargo de Q250."
+              },
+              "pass": true,
+              "score": 1,
+              "reason": "El contenido factual central de ambas respuestas coincide: el peso máximo es 100 kg y se aplica un recargo de Q250 cuando el peso está entre 90 kg y 100 kg. Sin embargo, la respuesta enviada incluye detalles adicionales que no están en la respuesta experta: especifica que es un límite estricto para el salto tándem, que el recargo es de carácter administrativo por balance de carga de la aeronave, y que cada participante es pesado durante la fase de registro (momento en que se valida el recargo). Estos detalles adicionales provienen de las FAQs recuperadas (FAQ-021, FAQ-022, FAQ-074) y no contradicen ningún punto de la respuesta experta, sino que la complementan. Por lo tanto, la respuesta enviada es un superconjunto de la respuesta experta y es totalmente consistente con ella.",
+              "tokensUsed": {
+                "total": 0,
+                "prompt": 0,
+                "completion": 0,
+                "cached": 0,
+                "numRequests": 0,
+                "completionDetails": {
+                  "reasoning": 0,
+                  "acceptedPrediction": 0,
+                  "rejectedPrediction": 0
+                }
+              }
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Assertion passed",
+              "assertion": {
+                "type": "javascript",
+                "value": "(() => { const r = JSON.parse(output); return r.tool_sequence.includes('buscar_faqs'); })()"
+              }
+            }
+          ]
+        },
+        "id": "a268d5c1-0959-478f-9165-648ecdd70297",
+        "latencyMs": 58056,
+        "namedScores": {},
+        "prompt": {
+          "raw": "¿Cuál es el peso máximo para saltar y qué recargo aplica?",
+          "label": "{{query}}",
+          "config": {
+            "provider": "file://grader_nvidia.py"
+          }
+        },
+        "promptId": "8868fc514e5f7bd1a350480c5a825cd0f5b47b6c0c8da0ca62be71158f638c23",
+        "promptIdx": 0,
+        "provider": {
+          "id": "file://provider_centralizada.py",
+          "label": "centralizada-nvidia"
+        },
+        "response": {
+          "output": "{\"answer\": \"**Peso máximo:** 100 kg (límite estricto para el salto tándem).\\n\\n**Recargo:** Si tu peso está entre 90 kg y 100 kg, se aplica un recargo administrativo adicional de **Q250** por balance de carga de la aeronave.\\n\\nTen en cuenta que cada participante es pesado durante la fase de registro, por lo que el recargo se valida en ese momento. ¿Necesitas algo más?\", \"tool_calls\": [{\"nombre\": \"buscar_faqs\", \"argumentos\": {\"0\": \"peso máximo permitido para saltar y recargo por peso\", \"1\": \"3\"}, \"exitosa\": true, \"resultado\": {\"encontrados\": 3, \"faqs\": [{\"id\": \"FAQ-021\", \"categoria\": \"Requisitos Físicos y Salud\", \"pregunta\": \"¿Cuál es el peso máximo permitido para saltar?\", \"respuesta\": \"El límite de peso máximo estricto para realizar el salto tándem es de 100 kg. Cada participante es pesado durante la fase de registro. Si el peso oscila entre 90 kg y 100 kg, se aplicará un recargo administrativo adicional de Q250 por balance de carga de la aeronave.\", \"similitud\": 0.842, \"calidad\": \"valida\"}, {\"id\": \"FAQ-022\", \"categoria\": \"Requisitos Físicos y Salud\", \"pregunta\": \"¿Por qué existe un límite de peso para el salto tándem?\", \"respuesta\": \"El límite de peso máximo estricto para realizar el salto tándem es de 100 kg. Cada participante es pesado durante la fase de registro. Si el peso oscila entre 90 kg y 100 kg, se aplicará un recargo administrativo adicional de Q250 por balance de carga de la aeronave.\", \"similitud\": 0.769, \"calidad\": \"valida\"}, {\"id\": \"FAQ-074\", \"categoria\": \"Precios, Paquetes y Métodos de Pago\", \"pregunta\": \"¿Hay costos adicionales por exceso de peso?\", \"respuesta\": \"El límite de peso máximo estricto para realizar el salto tándem es de 100 kg. Cada participante es pesado durante la fase de registro. Si el peso oscila entre 90 kg y 100 kg, se aplicará un recargo administrativo adicional de Q250 por balance de carga de la aeronave.\", \"similitud\": 0.564, \"calidad\": \"valida\"}]}, \"error\": null, \"duracion_ms\": 751.02}], \"tool_sequence\": [\"buscar_faqs\"], \"latency_ms\": 50669.85, \"appointment\": null, \"weather\": null, \"retrieved_faq_ids\": [\"FAQ-021\", \"FAQ-022\", \"FAQ-074\"], \"comprobante\": null, \"model\": \"z-ai/glm-5.3\", \"architecture\": \"centralizada\", \"error\": null}",
+          "metadata": {
+            "answer": "**Peso máximo:** 100 kg (límite estricto para el salto tándem).\n\n**Recargo:** Si tu peso está entre 90 kg y 100 kg, se aplica un recargo administrativo adicional de **Q250** por balance de carga de la aeronave.\n\nTen en cuenta que cada participante es pesado durante la fase de registro, por lo que el recargo se valida en ese momento. ¿Necesitas algo más?",
+            "tool_calls": [
+              {
+                "nombre": "buscar_faqs",
+                "argumentos": {
+                  "0": "peso máximo permitido para saltar y recargo por peso",
+                  "1": "3"
+                },
+                "exitosa": true,
+                "resultado": {
+                  "encontrados": 3,
+                  "faqs": [
+                    {
+                      "id": "FAQ-021",
+                      "categoria": "Requisitos Físicos y Salud",
+                      "pregunta": "¿Cuál es el peso máximo permitido para saltar?",
+                      "respuesta": "El límite de peso máximo estricto para realizar el salto tándem es de 100 kg. Cada participante es pesado durante la fase de registro. Si el peso oscila entre 90 kg y 100 kg, se aplicará un recargo administrativo adicional de Q250 por balance de carga de la aeronave.",
+                      "similitud": 0.842,
+                      "calidad": "valida"
+                    },
+                    {
+                      "id": "FAQ-022",
+                      "categoria": "Requisitos Físicos y Salud",
+                      "pregunta": "¿Por qué existe un límite de peso para el salto tándem?",
+                      "respuesta": "El límite de peso máximo estricto para realizar el salto tándem es de 100 kg. Cada participante es pesado durante la fase de registro. Si el peso oscila entre 90 kg y 100 kg, se aplicará un recargo administrativo adicional de Q250 por balance de carga de la aeronave.",
+                      "similitud": 0.769,
+                      "calidad": "valida"
+                    },
+                    {
+                      "id": "FAQ-074",
+                      "categoria": "Precios, Paquetes y Métodos de Pago",
+                      "pregunta": "¿Hay costos adicionales por exceso de peso?",
+                      "respuesta": "El límite de peso máximo estricto para realizar el salto tándem es de 100 kg. Cada participante es pesado durante la fase de registro. Si el peso oscila entre 90 kg y 100 kg, se aplicará un recargo administrativo adicional de Q250 por balance de carga de la aeronave.",
+                      "similitud": 0.564,
+                      "calidad": "valida"
+                    }
+                  ]
+                },
+                "error": null,
+                "duracion_ms": 751.02
+              }
+            ],
+            "tool_sequence": [
+              "buscar_faqs"
+            ],
+            "latency_ms": 50669.85,
+            "appointment": null,
+            "weather": null,
+            "retrieved_faq_ids": [
+              "FAQ-021",
+              "FAQ-022",
+              "FAQ-074"
+            ],
+            "comprobante": null,
+            "model": "z-ai/glm-5.3",
+            "architecture": "centralizada",
+            "error": null
+          },
+          "cached": false
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "FAQ factual: peso máximo y recargo",
+          "vars": {
+            "query": "¿Cuál es el peso máximo para saltar y qué recargo aplica?"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "(() => { const r = JSON.parse(output); return typeof r.latency_ms === 'number' && r.latency_ms < 120000; })()"
+            },
+            {
+              "type": "contains",
+              "value": "FAQ-021"
+            },
+            {
+              "type": "contains",
+              "value": "100 kg"
+            },
+            {
+              "type": "regex",
+              "value": "Q250"
+            },
+            {
+              "type": "factuality",
+              "value": "El peso máximo es 100 kg y entre 90 kg y 100 kg se aplica un recargo de Q250."
+            },
+            {
+              "type": "javascript",
+              "value": "(() => { const r = JSON.parse(output); return r.tool_sequence.includes('buscar_faqs'); })()"
+            }
+          ],
+          "options": {
+            "provider": "file://grader_nvidia.py"
+          },
+          "metadata": {}
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "query": "¿Cuál es el peso máximo para saltar y qué recargo aplica?"
+        },
+        "metadata": {
+          "answer": "**Peso máximo:** 100 kg (límite estricto para el salto tándem).\n\n**Recargo:** Si tu peso está entre 90 kg y 100 kg, se aplica un recargo administrativo adicional de **Q250** por balance de carga de la aeronave.\n\nTen en cuenta que cada participante es pesado durante la fase de registro, por lo que el recargo se valida en ese momento. ¿Necesitas algo más?",
+          "tool_calls": [
+            {
+              "nombre": "buscar_faqs",
+              "argumentos": {
+                "0": "peso máximo permitido para saltar y recargo por peso",
+                "1": "3"
+              },
+              "exitosa": true,
+              "resultado": {
+                "encontrados": 3,
+                "faqs": [
+                  {
+                    "id": "FAQ-021",
+                    "categoria": "Requisitos Físicos y Salud",
+                    "pregunta": "¿Cuál es el peso máximo permitido para saltar?",
+                    "respuesta": "El límite de peso máximo estricto para realizar el salto tándem es de 100 kg. Cada participante es pesado durante la fase de registro. Si el peso oscila entre 90 kg y 100 kg, se aplicará un recargo administrativo adicional de Q250 por balance de carga de la aeronave.",
+                    "similitud": 0.842,
+                    "calidad": "valida"
+                  },
+                  {
+                    "id": "FAQ-022",
+                    "categoria": "Requisitos Físicos y Salud",
+                    "pregunta": "¿Por qué existe un límite de peso para el salto tándem?",
+                    "respuesta": "El límite de peso máximo estricto para realizar el salto tándem es de 100 kg. Cada participante es pesado durante la fase de registro. Si el peso oscila entre 90 kg y 100 kg, se aplicará un recargo administrativo adicional de Q250 por balance de carga de la aeronave.",
+                    "similitud": 0.769,
+                    "calidad": "valida"
+                  },
+                  {
+                    "id": "FAQ-074",
+                    "categoria": "Precios, Paquetes y Métodos de Pago",
+                    "pregunta": "¿Hay costos adicionales por exceso de peso?",
+                    "respuesta": "El límite de peso máximo estricto para realizar el salto tándem es de 100 kg. Cada participante es pesado durante la fase de registro. Si el peso oscila entre 90 kg y 100 kg, se aplicará un recargo administrativo adicional de Q250 por balance de carga de la aeronave.",
+                    "similitud": 0.564,
+                    "calidad": "valida"
+                  }
+                ]
+              },
+              "error": null,
+              "duracion_ms": 751.02
+            }
+          ],
+          "tool_sequence": [
+            "buscar_faqs"
+          ],
+          "latency_ms": 50669.85,
+          "appointment": null,
+          "weather": null,
+          "retrieved_faq_ids": [
+            "FAQ-021",
+            "FAQ-022",
+            "FAQ-074"
+          ],
+          "comprobante": null,
+          "model": "z-ai/glm-5.3",
+          "architecture": "centralizada",
+          "error": null,
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Assertion passed",
+              "assertion": {
+                "type": "javascript",
+                "value": "(() => { const r = JSON.parse(output); return typeof r.latency_ms === 'number' && r.latency_ms < 120000; })()"
+              }
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Assertion passed",
+              "assertion": {
+                "type": "contains",
+                "value": "FAQ-029"
+              }
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Assertion passed",
+              "assertion": {
+                "type": "regex",
+                "value": "24 horas"
+              }
+            },
+            {
+              "assertion": {
+                "type": "factuality",
+                "value": "Se requieren al menos 24 horas entre la última inmersión y el salto."
+              },
+              "pass": true,
+              "score": 1,
+              "reason": "El núcleo factual de la respuesta enviada coincide exactamente con la respuesta experta: ambas establecen que se requiere un mínimo de 24 horas entre la última inmersión de buceo y el salto. Sin embargo, la respuesta enviada es un superconjunto de la respuesta experta, ya que añade información adicional consistente: la explicación de que este intervalo es necesario para evitar el riesgo de enfermedad por descompresión, la mención de que los cambios bruscos de presión atmosférica pueden ser peligrosos si existe nitrógeno residual en el cuerpo, y una recomendación práctica de coordinar el buceo al menos un día antes del salto. Ninguno de estos detalles adicionales contradice la respuesta experta; todos son explicaciones complementarias plausibles y coherentes con la regla de las 24 horas. Por lo tanto, la respuesta enviada contiene toda la información de la respuesta experta más detalles adicionales consistentes, lo que corresponde a la categoría B.",
+              "tokensUsed": {
+                "total": 0,
+                "prompt": 0,
+                "completion": 0,
+                "cached": 0,
+                "numRequests": 0,
+                "completionDetails": {
+                  "reasoning": 0,
+                  "acceptedPrediction": 0,
+                  "rejectedPrediction": 0
+                }
+              }
+            }
+          ]
+        },
+        "id": "90c437cc-c2c5-4c44-b2c5-9e8d7703ebde",
+        "latencyMs": 22614,
+        "namedScores": {},
+        "prompt": {
+          "raw": "¿Cuánto tiempo debo esperar después de hacer buceo antes de saltar?",
+          "label": "{{query}}",
+          "config": {
+            "provider": "file://grader_nvidia.py"
+          }
+        },
+        "promptId": "8868fc514e5f7bd1a350480c5a825cd0f5b47b6c0c8da0ca62be71158f638c23",
+        "promptIdx": 0,
+        "provider": {
+          "id": "file://provider_centralizada.py",
+          "label": "centralizada-nvidia"
+        },
+        "response": {
+          "output": "{\"answer\": \"Debes esperar un **mínimo de 24 horas** entre tu última inmersión de buceo (scuba diving) y la hora del salto en paracaídas.\\n\\nEste intervalo es indispensable para evitar el riesgo de enfermedad por descompresión, ya que los cambios bruscos de presión atmosférica al saltar pueden ser peligrosos si aún tienes nitrógeno residual en el cuerpo. \\n\\nSi tienes planeado saltar con nosotros, coordina tus actividades de buceo al menos un día antes. ¿Deseas agendar tu salto o resolver otra duda?\", \"tool_calls\": [{\"nombre\": \"buscar_faqs\", \"argumentos\": {\"0\": \"tiempo de espera después de hacer buceo antes de saltar en paracaídas\", \"1\": \"3\"}, \"exitosa\": true, \"resultado\": {\"encontrados\": 3, \"faqs\": [{\"id\": \"FAQ-029\", \"categoria\": \"Requisitos Físicos y Salud\", \"pregunta\": \"¿Cuánto tiempo debo esperar tras hacer buceo antes de saltar?\", \"respuesta\": \"Se requiere un intervalo mínimo de 24 horas entre su última inmersión de buceo (scuba diving) y la hora del salto. Esto es indispensable para evitar el riesgo de enfermedad por descompresión debido a los cambios bruscos de presión atmosférica.\", \"similitud\": 0.691, \"calidad\": \"valida\"}, {\"id\": \"FAQ-052\", \"categoria\": \"Seguridad y Normativa Aeronáutica\", \"pregunta\": \"¿Cuánto tiempo dura el vuelo con el paracaídas abierto?\", \"respuesta\": \"Respuesta detallada para la consulta sobre '¿Cuánto tiempo dura el vuelo con el paracaídas abierto?' en el contexto del evento de Parachute S.A. del 29 de septiembre de 2026 en Guatemala. Categoría oficial: [Seguridad y Normativa Aeronáutica]. Esta política y procedimiento es dictado bajo las normativas vigentes de seguridad aeronáutica y los estándares internacionales de paracaidismo tándem. Para más detalles específicos sobre la ficha #52, consulte directamente con la central de atención al cliente de Parachute S.A. a través de soporte@parachutesa.gt.\", \"similitud\": 0.658, \"calidad\": \"valida\"}, {\"id\": \"FAQ-043\", \"categoria\": \"Seguridad y Normativa Aeronáutica\", \"pregunta\": \"¿Con qué frecuencia se revisan los paracaídas?\", \"respuesta\": \"Respuesta detallada para la consulta sobre '¿Con qué frecuencia se revisan los paracaídas?' en el contexto del evento de Parachute S.A. del 29 de septiembre de 2026 en Guatemala. Categoría oficial: [Seguridad y Normativa Aeronáutica]. Esta política y procedimiento es dictado bajo las normativas vigentes de seguridad aeronáutica y los estándares internacionales de paracaidismo tándem. Para más detalles específicos sobre la ficha #43, consulte directamente con la central de atención al cliente de Parachute S.A. a través de soporte@parachutesa.gt.\", \"similitud\": 0.615, \"calidad\": \"valida\"}]}, \"error\": null, \"duracion_ms\": 37.17}], \"tool_sequence\": [\"buscar_faqs\"], \"latency_ms\": 22540.92, \"appointment\": null, \"weather\": null, \"retrieved_faq_ids\": [\"FAQ-029\", \"FAQ-052\", \"FAQ-043\"], \"comprobante\": null, \"model\": \"z-ai/glm-5.3\", \"architecture\": \"centralizada\", \"error\": null}",
+          "metadata": {
+            "answer": "Debes esperar un **mínimo de 24 horas** entre tu última inmersión de buceo (scuba diving) y la hora del salto en paracaídas.\n\nEste intervalo es indispensable para evitar el riesgo de enfermedad por descompresión, ya que los cambios bruscos de presión atmosférica al saltar pueden ser peligrosos si aún tienes nitrógeno residual en el cuerpo. \n\nSi tienes planeado saltar con nosotros, coordina tus actividades de buceo al menos un día antes. ¿Deseas agendar tu salto o resolver otra duda?",
+            "tool_calls": [
+              {
+                "nombre": "buscar_faqs",
+                "argumentos": {
+                  "0": "tiempo de espera después de hacer buceo antes de saltar en paracaídas",
+                  "1": "3"
+                },
+                "exitosa": true,
+                "resultado": {
+                  "encontrados": 3,
+                  "faqs": [
+                    {
+                      "id": "FAQ-029",
+                      "categoria": "Requisitos Físicos y Salud",
+                      "pregunta": "¿Cuánto tiempo debo esperar tras hacer buceo antes de saltar?",
+                      "respuesta": "Se requiere un intervalo mínimo de 24 horas entre su última inmersión de buceo (scuba diving) y la hora del salto. Esto es indispensable para evitar el riesgo de enfermedad por descompresión debido a los cambios bruscos de presión atmosférica.",
+                      "similitud": 0.691,
+                      "calidad": "valida"
+                    },
+                    {
+                      "id": "FAQ-052",
+                      "categoria": "Seguridad y Normativa Aeronáutica",
+                      "pregunta": "¿Cuánto tiempo dura el vuelo con el paracaídas abierto?",
+                      "respuesta": "Respuesta detallada para la consulta sobre '¿Cuánto tiempo dura el vuelo con el paracaídas abierto?' en el contexto del evento de Parachute S.A. del 29 de septiembre de 2026 en Guatemala. Categoría oficial: [Seguridad y Normativa Aeronáutica]. Esta política y procedimiento es dictado bajo las normativas vigentes de seguridad aeronáutica y los estándares internacionales de paracaidismo tándem. Para más detalles específicos sobre la ficha #52, consulte directamente con la central de atención al cliente de Parachute S.A. a través de soporte@parachutesa.gt.",
+                      "similitud": 0.658,
+                      "calidad": "valida"
+                    },
+                    {
+                      "id": "FAQ-043",
+                      "categoria": "Seguridad y Normativa Aeronáutica",
+                      "pregunta": "¿Con qué frecuencia se revisan los paracaídas?",
+                      "respuesta": "Respuesta detallada para la consulta sobre '¿Con qué frecuencia se revisan los paracaídas?' en el contexto del evento de Parachute S.A. del 29 de septiembre de 2026 en Guatemala. Categoría oficial: [Seguridad y Normativa Aeronáutica]. Esta política y procedimiento es dictado bajo las normativas vigentes de seguridad aeronáutica y los estándares internacionales de paracaidismo tándem. Para más detalles específicos sobre la ficha #43, consulte directamente con la central de atención al cliente de Parachute S.A. a través de soporte@parachutesa.gt.",
+                      "similitud": 0.615,
+                      "calidad": "valida"
+                    }
+                  ]
+                },
+                "error": null,
+                "duracion_ms": 37.17
+              }
+            ],
+            "tool_sequence": [
+              "buscar_faqs"
+            ],
+            "latency_ms": 22540.92,
+            "appointment": null,
+            "weather": null,
+            "retrieved_faq_ids": [
+              "FAQ-029",
+              "FAQ-052",
+              "FAQ-043"
+            ],
+            "comprobante": null,
+            "model": "z-ai/glm-5.3",
+            "architecture": "centralizada",
+            "error": null
+          },
+          "cached": false
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "FAQ factual: intervalo después de buceo",
+          "vars": {
+            "query": "¿Cuánto tiempo debo esperar después de hacer buceo antes de saltar?"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "(() => { const r = JSON.parse(output); return typeof r.latency_ms === 'number' && r.latency_ms < 120000; })()"
+            },
+            {
+              "type": "contains",
+              "value": "FAQ-029"
+            },
+            {
+              "type": "regex",
+              "value": "24 horas"
+            },
+            {
+              "type": "factuality",
+              "value": "Se requieren al menos 24 horas entre la última inmersión y el salto."
+            }
+          ],
+          "options": {
+            "provider": "file://grader_nvidia.py"
+          },
+          "metadata": {}
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "query": "¿Cuánto tiempo debo esperar después de hacer buceo antes de saltar?"
+        },
+        "metadata": {
+          "answer": "Debes esperar un **mínimo de 24 horas** entre tu última inmersión de buceo (scuba diving) y la hora del salto en paracaídas.\n\nEste intervalo es indispensable para evitar el riesgo de enfermedad por descompresión, ya que los cambios bruscos de presión atmosférica al saltar pueden ser peligrosos si aún tienes nitrógeno residual en el cuerpo. \n\nSi tienes planeado saltar con nosotros, coordina tus actividades de buceo al menos un día antes. ¿Deseas agendar tu salto o resolver otra duda?",
+          "tool_calls": [
+            {
+              "nombre": "buscar_faqs",
+              "argumentos": {
+                "0": "tiempo de espera después de hacer buceo antes de saltar en paracaídas",
+                "1": "3"
+              },
+              "exitosa": true,
+              "resultado": {
+                "encontrados": 3,
+                "faqs": [
+                  {
+                    "id": "FAQ-029",
+                    "categoria": "Requisitos Físicos y Salud",
+                    "pregunta": "¿Cuánto tiempo debo esperar tras hacer buceo antes de saltar?",
+                    "respuesta": "Se requiere un intervalo mínimo de 24 horas entre su última inmersión de buceo (scuba diving) y la hora del salto. Esto es indispensable para evitar el riesgo de enfermedad por descompresión debido a los cambios bruscos de presión atmosférica.",
+                    "similitud": 0.691,
+                    "calidad": "valida"
+                  },
+                  {
+                    "id": "FAQ-052",
+                    "categoria": "Seguridad y Normativa Aeronáutica",
+                    "pregunta": "¿Cuánto tiempo dura el vuelo con el paracaídas abierto?",
+                    "respuesta": "Respuesta detallada para la consulta sobre '¿Cuánto tiempo dura el vuelo con el paracaídas abierto?' en el contexto del evento de Parachute S.A. del 29 de septiembre de 2026 en Guatemala. Categoría oficial: [Seguridad y Normativa Aeronáutica]. Esta política y procedimiento es dictado bajo las normativas vigentes de seguridad aeronáutica y los estándares internacionales de paracaidismo tándem. Para más detalles específicos sobre la ficha #52, consulte directamente con la central de atención al cliente de Parachute S.A. a través de soporte@parachutesa.gt.",
+                    "similitud": 0.658,
+                    "calidad": "valida"
+                  },
+                  {
+                    "id": "FAQ-043",
+                    "categoria": "Seguridad y Normativa Aeronáutica",
+                    "pregunta": "¿Con qué frecuencia se revisan los paracaídas?",
+                    "respuesta": "Respuesta detallada para la consulta sobre '¿Con qué frecuencia se revisan los paracaídas?' en el contexto del evento de Parachute S.A. del 29 de septiembre de 2026 en Guatemala. Categoría oficial: [Seguridad y Normativa Aeronáutica]. Esta política y procedimiento es dictado bajo las normativas vigentes de seguridad aeronáutica y los estándares internacionales de paracaidismo tándem. Para más detalles específicos sobre la ficha #43, consulte directamente con la central de atención al cliente de Parachute S.A. a través de soporte@parachutesa.gt.",
+                    "similitud": 0.615,
+                    "calidad": "valida"
+                  }
+                ]
+              },
+              "error": null,
+              "duracion_ms": 37.17
+            }
+          ],
+          "tool_sequence": [
+            "buscar_faqs"
+          ],
+          "latency_ms": 22540.92,
+          "appointment": null,
+          "weather": null,
+          "retrieved_faq_ids": [
+            "FAQ-029",
+            "FAQ-052",
+            "FAQ-043"
+          ],
+          "comprobante": null,
+          "model": "z-ai/glm-5.3",
+          "architecture": "centralizada",
+          "error": null,
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Assertion passed",
+              "assertion": {
+                "type": "javascript",
+                "value": "(() => { const r = JSON.parse(output); return typeof r.latency_ms === 'number' && r.latency_ms < 120000; })()"
+              }
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Assertion passed",
+              "assertion": {
+                "type": "contains",
+                "value": "soporte@parachutesa.gt"
+              }
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Assertion passed",
+              "assertion": {
+                "type": "regex",
+                "value": "([Nn]o (puedo|se puede) responder|[Nn]o dispongo de|[Nn]o figura en la base de conocimientos|[Nn]o est[áa]n disponibles?|[Nn]o incluye|[Nn]o tengo disponible)"
+              }
+            }
+          ]
+        },
+        "id": "c9260617-7341-4570-a36b-c03ee0ea9857",
+        "latencyMs": 106395,
+        "namedScores": {},
+        "prompt": {
+          "raw": "¿Cuál es la dirección GPS exacta del aeródromo?",
+          "label": "{{query}}",
+          "config": {
+            "provider": "file://grader_nvidia.py"
+          }
+        },
+        "promptId": "8868fc514e5f7bd1a350480c5a825cd0f5b47b6c0c8da0ca62be71158f638c23",
+        "promptIdx": 0,
+        "provider": {
+          "id": "file://provider_centralizada.py",
+          "label": "centralizada-nvidia"
+        },
+        "response": {
+          "output": "{\"answer\": \"Lamentablemente, no tengo disponibles las coordenadas GPS exactas del aeródromo en este momento.\\n\\nExisten FAQ oficiales (referencia **FAQ-015**, categoría *Logística y Ubicación*) sobre este tema, pero los datos concretos se gestionan a través de la central de atención.\\n\\n**Para obtener la dirección exacta:**\\n- Contacta a **soporte@parachutesa.gt**\\n- Indica la referencia **FAQ-015**\\n\\n¿Hay algo más en lo que pueda ayudarte, como verificar el clima o consultar disponibilidad de citas?\", \"tool_calls\": [{\"nombre\": \"buscar_faqs\", \"argumentos\": {\"0\": \"dirección GPS exacta del aeródromo\", \"1\": \"3\"}, \"exitosa\": true, \"resultado\": {\"encontrados\": 3, \"faqs\": [{\"id\": \"FAQ-015\", \"categoria\": \"Logística y Ubicación\", \"pregunta\": \"¿Cuál es la dirección exacta en GPS / Google Maps?\", \"respuesta\": \"Respuesta detallada para la consulta sobre '¿Cuál es la dirección exacta en GPS / Google Maps?' en el contexto del evento de Parachute S.A. del 29 de septiembre de 2026 en Guatemala. Categoría oficial: [Logística y Ubicación]. Esta política y procedimiento es dictado bajo las normativas vigentes de seguridad aeronáutica y los estándares internacionales de paracaidismo tándem. Para más detalles específicos sobre la ficha #15, consulte directamente con la central de atención al cliente de Parachute S.A. a través de soporte@parachutesa.gt.\", \"similitud\": 0.729, \"calidad\": \"valida\"}, {\"id\": \"FAQ-054\", \"categoria\": \"Seguridad y Normativa Aeronáutica\", \"pregunta\": \"¿Cómo se maneja el tráfico aéreo en la zona?\", \"respuesta\": \"Respuesta detallada para la consulta sobre '¿Cómo se maneja el tráfico aéreo en la zona?' en el contexto del evento de Parachute S.A. del 29 de septiembre de 2026 en Guatemala. Categoría oficial: [Seguridad y Normativa Aeronáutica]. Esta política y procedimiento es dictado bajo las normativas vigentes de seguridad aeronáutica y los estándares internacionales de paracaidismo tándem. Para más detalles específicos sobre la ficha #54, consulte directamente con la central de atención al cliente de Parachute S.A. a través de soporte@parachutesa.gt.\", \"similitud\": 0.502, \"calidad\": \"valida\"}, {\"id\": \"FAQ-060\", \"categoria\": \"Seguridad y Normativa Aeronáutica\", \"pregunta\": \"¿Cómo influye la altitud sobre el nivel del mar en la zona de salto?\", \"respuesta\": \"Respuesta detallada para la consulta sobre '¿Cómo influye la altitud sobre el nivel del mar en la zona de salto?' en el contexto del evento de Parachute S.A. del 29 de septiembre de 2026 en Guatemala. Categoría oficial: [Seguridad y Normativa Aeronáutica]. Esta política y procedimiento es dictado bajo las normativas vigentes de seguridad aeronáutica y los estándares internacionales de paracaidismo tándem. Para más detalles específicos sobre la ficha #60, consulte directamente con la central de atención al cliente de Parachute S.A. a través de soporte@parachutesa.gt.\", \"similitud\": 0.502, \"calidad\": \"valida\"}]}, \"error\": null, \"duracion_ms\": 34.16}], \"tool_sequence\": [\"buscar_faqs\"], \"latency_ms\": 106387.33, \"appointment\": null, \"weather\": null, \"retrieved_faq_ids\": [\"FAQ-015\", \"FAQ-054\", \"FAQ-060\"], \"comprobante\": null, \"model\": \"z-ai/glm-5.3\", \"architecture\": \"centralizada\", \"error\": null}",
+          "metadata": {
+            "answer": "Lamentablemente, no tengo disponibles las coordenadas GPS exactas del aeródromo en este momento.\n\nExisten FAQ oficiales (referencia **FAQ-015**, categoría *Logística y Ubicación*) sobre este tema, pero los datos concretos se gestionan a través de la central de atención.\n\n**Para obtener la dirección exacta:**\n- Contacta a **soporte@parachutesa.gt**\n- Indica la referencia **FAQ-015**\n\n¿Hay algo más en lo que pueda ayudarte, como verificar el clima o consultar disponibilidad de citas?",
+            "tool_calls": [
+              {
+                "nombre": "buscar_faqs",
+                "argumentos": {
+                  "0": "dirección GPS exacta del aeródromo",
+                  "1": "3"
+                },
+                "exitosa": true,
+                "resultado": {
+                  "encontrados": 3,
+                  "faqs": [
+                    {
+                      "id": "FAQ-015",
+                      "categoria": "Logística y Ubicación",
+                      "pregunta": "¿Cuál es la dirección exacta en GPS / Google Maps?",
+                      "respuesta": "Respuesta detallada para la consulta sobre '¿Cuál es la dirección exacta en GPS / Google Maps?' en el contexto del evento de Parachute S.A. del 29 de septiembre de 2026 en Guatemala. Categoría oficial: [Logística y Ubicación]. Esta política y procedimiento es dictado bajo las normativas vigentes de seguridad aeronáutica y los estándares internacionales de paracaidismo tándem. Para más detalles específicos sobre la ficha #15, consulte directamente con la central de atención al cliente de Parachute S.A. a través de soporte@parachutesa.gt.",
+                      "similitud": 0.729,
+                      "calidad": "valida"
+                    },
+                    {
+                      "id": "FAQ-054",
+                      "categoria": "Seguridad y Normativa Aeronáutica",
+                      "pregunta": "¿Cómo se maneja el tráfico aéreo en la zona?",
+                      "respuesta": "Respuesta detallada para la consulta sobre '¿Cómo se maneja el tráfico aéreo en la zona?' en el contexto del evento de Parachute S.A. del 29 de septiembre de 2026 en Guatemala. Categoría oficial: [Seguridad y Normativa Aeronáutica]. Esta política y procedimiento es dictado bajo las normativas vigentes de seguridad aeronáutica y los estándares internacionales de paracaidismo tándem. Para más detalles específicos sobre la ficha #54, consulte directamente con la central de atención al cliente de Parachute S.A. a través de soporte@parachutesa.gt.",
+                      "similitud": 0.502,
+                      "calidad": "valida"
+                    },
+                    {
+                      "id": "FAQ-060",
+                      "categoria": "Seguridad y Normativa Aeronáutica",
+                      "pregunta": "¿Cómo influye la altitud sobre el nivel del mar en la zona de salto?",
+                      "respuesta": "Respuesta detallada para la consulta sobre '¿Cómo influye la altitud sobre el nivel del mar en la zona de salto?' en el contexto del evento de Parachute S.A. del 29 de septiembre de 2026 en Guatemala. Categoría oficial: [Seguridad y Normativa Aeronáutica]. Esta política y procedimiento es dictado bajo las normativas vigentes de seguridad aeronáutica y los estándares internacionales de paracaidismo tándem. Para más detalles específicos sobre la ficha #60, consulte directamente con la central de atención al cliente de Parachute S.A. a través de soporte@parachutesa.gt.",
+                      "similitud": 0.502,
+                      "calidad": "valida"
+                    }
+                  ]
+                },
+                "error": null,
+                "duracion_ms": 34.16
+              }
+            ],
+            "tool_sequence": [
+              "buscar_faqs"
+            ],
+            "latency_ms": 106387.33,
+            "appointment": null,
+            "weather": null,
+            "retrieved_faq_ids": [
+              "FAQ-015",
+              "FAQ-054",
+              "FAQ-060"
+            ],
+            "comprobante": null,
+            "model": "z-ai/glm-5.3",
+            "architecture": "centralizada",
+            "error": null
+          },
+          "cached": false
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "FAQ insuficiente: deriva a soporte",
+          "vars": {
+            "query": "¿Cuál es la dirección GPS exacta del aeródromo?"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "(() => { const r = JSON.parse(output); return typeof r.latency_ms === 'number' && r.latency_ms < 120000; })()"
+            },
+            {
+              "type": "contains",
+              "value": "soporte@parachutesa.gt"
+            },
+            {
+              "type": "regex",
+              "value": "([Nn]o (puedo|se puede) responder|[Nn]o dispongo de|[Nn]o figura en la base de conocimientos|[Nn]o est[áa]n disponibles?|[Nn]o incluye|[Nn]o tengo disponible)"
+            }
+          ],
+          "options": {
+            "provider": "file://grader_nvidia.py"
+          },
+          "metadata": {}
+        },
+        "testIdx": 2,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "query": "¿Cuál es la dirección GPS exacta del aeródromo?"
+        },
+        "metadata": {
+          "answer": "Lamentablemente, no tengo disponibles las coordenadas GPS exactas del aeródromo en este momento.\n\nExisten FAQ oficiales (referencia **FAQ-015**, categoría *Logística y Ubicación*) sobre este tema, pero los datos concretos se gestionan a través de la central de atención.\n\n**Para obtener la dirección exacta:**\n- Contacta a **soporte@parachutesa.gt**\n- Indica la referencia **FAQ-015**\n\n¿Hay algo más en lo que pueda ayudarte, como verificar el clima o consultar disponibilidad de citas?",
+          "tool_calls": [
+            {
+              "nombre": "buscar_faqs",
+              "argumentos": {
+                "0": "dirección GPS exacta del aeródromo",
+                "1": "3"
+              },
+              "exitosa": true,
+              "resultado": {
+                "encontrados": 3,
+                "faqs": [
+                  {
+                    "id": "FAQ-015",
+                    "categoria": "Logística y Ubicación",
+                    "pregunta": "¿Cuál es la dirección exacta en GPS / Google Maps?",
+                    "respuesta": "Respuesta detallada para la consulta sobre '¿Cuál es la dirección exacta en GPS / Google Maps?' en el contexto del evento de Parachute S.A. del 29 de septiembre de 2026 en Guatemala. Categoría oficial: [Logística y Ubicación]. Esta política y procedimiento es dictado bajo las normativas vigentes de seguridad aeronáutica y los estándares internacionales de paracaidismo tándem. Para más detalles específicos sobre la ficha #15, consulte directamente con la central de atención al cliente de Parachute S.A. a través de soporte@parachutesa.gt.",
+                    "similitud": 0.729,
+                    "calidad": "valida"
+                  },
+                  {
+                    "id": "FAQ-054",
+                    "categoria": "Seguridad y Normativa Aeronáutica",
+                    "pregunta": "¿Cómo se maneja el tráfico aéreo en la zona?",
+                    "respuesta": "Respuesta detallada para la consulta sobre '¿Cómo se maneja el tráfico aéreo en la zona?' en el contexto del evento de Parachute S.A. del 29 de septiembre de 2026 en Guatemala. Categoría oficial: [Seguridad y Normativa Aeronáutica]. Esta política y procedimiento es dictado bajo las normativas vigentes de seguridad aeronáutica y los estándares internacionales de paracaidismo tándem. Para más detalles específicos sobre la ficha #54, consulte directamente con la central de atención al cliente de Parachute S.A. a través de soporte@parachutesa.gt.",
+                    "similitud": 0.502,
+                    "calidad": "valida"
+                  },
+                  {
+                    "id": "FAQ-060",
+                    "categoria": "Seguridad y Normativa Aeronáutica",
+                    "pregunta": "¿Cómo influye la altitud sobre el nivel del mar en la zona de salto?",
+                    "respuesta": "Respuesta detallada para la consulta sobre '¿Cómo influye la altitud sobre el nivel del mar en la zona de salto?' en el contexto del evento de Parachute S.A. del 29 de septiembre de 2026 en Guatemala. Categoría oficial: [Seguridad y Normativa Aeronáutica]. Esta política y procedimiento es dictado bajo las normativas vigentes de seguridad aeronáutica y los estándares internacionales de paracaidismo tándem. Para más detalles específicos sobre la ficha #60, consulte directamente con la central de atención al cliente de Parachute S.A. a través de soporte@parachutesa.gt.",
+                    "similitud": 0.502,
+                    "calidad": "valida"
+                  }
+                ]
+              },
+              "error": null,
+              "duracion_ms": 34.16
+            }
+          ],
+          "tool_sequence": [
+            "buscar_faqs"
+          ],
+          "latency_ms": 106387.33,
+          "appointment": null,
+          "weather": null,
+          "retrieved_faq_ids": [
+            "FAQ-015",
+            "FAQ-054",
+            "FAQ-060"
+          ],
+          "comprobante": null,
+          "model": "z-ai/glm-5.3",
+          "architecture": "centralizada",
+          "error": null,
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Assertion passed",
+              "assertion": {
+                "type": "javascript",
+                "value": "(() => { const r = JSON.parse(output); return typeof r.latency_ms === 'number' && r.latency_ms < 120000; })()"
+              }
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Assertion passed",
+              "assertion": {
+                "type": "contains",
+                "value": "IDEAL"
+              }
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Assertion passed",
+              "assertion": {
+                "type": "regex",
+                "value": "2026-09-29"
+              }
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Assertion passed",
+              "assertion": {
+                "type": "regex",
+                "value": "10:00"
+              }
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Assertion passed",
+              "assertion": {
+                "type": "javascript",
+                "value": "(() => { const r = JSON.parse(output); const s = r.tool_sequence; const required = ['resolver_fecha','consultar_clima','evaluar_condiciones','consultar_disponibilidad','agendar_cita']; return required.every(x => s.includes(x)); })()"
+              }
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Assertion passed",
+              "assertion": {
+                "type": "javascript",
+                "value": "(() => { const r = JSON.parse(output); return r.appointment?.exito === true; })()"
+              }
+            }
+          ]
+        },
+        "id": "88126e72-ea0a-4e11-95e2-bde72b10205a",
+        "latencyMs": 47408,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Quiero reservar un salto para el 2026-09-29 a las 10:00 a nombre de Test Ideal.",
+          "label": "{{query}}",
+          "config": {
+            "provider": "file://grader_nvidia.py"
+          }
+        },
+        "promptId": "8868fc514e5f7bd1a350480c5a825cd0f5b47b6c0c8da0ca62be71158f638c23",
+        "promptIdx": 0,
+        "provider": {
+          "id": "file://provider_centralizada.py",
+          "label": "centralizada-nvidia"
+        },
+        "response": {
+          "output": "{\"answer\": \"✅ **Reserva confirmada con éxito**\\n\\n**Detalles de tu salto:**\\n\\n| Campo | Detalle |\\n|---|---|\\n| **ID Reserva** | `718a82ac-c6e6-42cb-a4f3-5db0a8c2f337` |\\n| **Cliente** | Test Ideal |\\n| **Fecha** | 2026-09-29 |\\n| **Horario** | 10:00 (1 hora) |\\n| **Clima** | IDEAL (25°C, viento 14.5 km/h, sin precipitaciones) |\\n\\nLas condiciones meteorológicas son perfectas para el salto, sin advertencias ni restricciones. ¡Te esperamos el 29 de septiembre! 🪂\", \"tool_calls\": [{\"nombre\": \"resolver_fecha\", \"argumentos\": {\"0\": \"2026-09-29\"}, \"exitosa\": true, \"resultado\": {\"es_valida\": true, \"fecha_iso\": \"2026-09-29\", \"mensaje_error\": null, \"requiere_aclaracion\": false, \"fecha_maxima\": \"2026-10-03\"}, \"error\": null, \"duracion_ms\": 0.82}, {\"nombre\": \"consultar_clima\", \"argumentos\": {\"0\": \"2026-09-29\", \"1\": \"\"}, \"exitosa\": true, \"resultado\": {\"id_evidencia\": \"6aaca8aa-4136-4e93-b198-1c9a44868179\", \"fecha\": \"2026-09-29\", \"temperatura_c\": 25.0, \"viento_kmh\": 14.5, \"rafaga_kmh\": 22.0, \"precipitacion_mm\": 0.0, \"nubes_pct\": 18.0, \"modo_agregacion\": \"operativo_horario\", \"veredicto_global\": \"IDEAL\", \"es_seguro_saltar\": true, \"motivos\": [\"Todas las condiciones se encuentran dentro de los parámetros ideales.\"], \"advertencias\": [], \"fuente\": \"mock://simulador-condiciones\"}, \"error\": null, \"duracion_ms\": 0.26}, {\"nombre\": \"evaluar_condiciones\", \"argumentos\": {\"0\": \"6aaca8aa-4136-4e93-b198-1c9a44868179\"}, \"exitosa\": true, \"resultado\": {\"id_evidencia\": \"6aaca8aa-4136-4e93-b198-1c9a44868179\", \"fecha\": \"2026-09-29\", \"veredicto\": \"IDEAL\", \"es_seguro\": true, \"motivos\": [\"Todas las condiciones se encuentran dentro de los parámetros ideales.\"], \"advertencias\": [], \"variables\": {\"viento\": \"IDEAL\", \"rafagas\": \"IDEAL\", \"precipitacion\": \"IDEAL\", \"nubes\": \"IDEAL\", \"temperatura\": \"INFORMATIVO\"}}, \"error\": null, \"duracion_ms\": 0.05}, {\"nombre\": \"consultar_disponibilidad\", \"argumentos\": {\"0\": \"2026-09-29\"}, \"exitosa\": true, \"resultado\": {\"valida\": true, \"fecha\": \"2026-09-29\", \"total_cupos\": 8, \"cupos_libres\": 8, \"franjas_libres\": [\"08:00\", \"09:00\", \"10:00\", \"11:00\", \"12:00\", \"13:00\", \"14:00\", \"15:00\"], \"franjas_ocupadas\": []}, \"error\": null, \"duracion_ms\": 14.13}, {\"nombre\": \"agendar_cita\", \"argumentos\": {\"0\": \"Test Ideal\", \"1\": \"2026-09-29\", \"2\": \"10:00\", \"3\": \"6aaca8aa-4136-4e93-b198-1c9a44868179\", \"4\": \"centralizada\"}, \"exitosa\": true, \"resultado\": {\"exito\": true, \"mensaje\": \"Cita agendada con éxito.\", \"id_cita\": \"718a82ac-c6e6-42cb-a4f3-5db0a8c2f337\", \"fecha\": \"2026-09-29\", \"hora\": \"10:00\", \"veredicto\": \"IDEAL\", \"advertencias\": [], \"comprobante\": \"====================================================\\n           COMPROBANTE OFICIAL DE RESERVA           \\n                  PARACHUTE S.A.                    \\n====================================================\\nID Reserva:    718a82ac-c6e6-42cb-a4f3-5db0a8c2f337\\nCliente:       Test Ideal\\nFecha de salto:2026-09-29\\nFranja horaria:10:00 (duración 1 hora)\\nVeredicto:     IDEAL\\nArquitectura:  centralizada\\nAdvertencias:\\n  * Ninguna\\n====================================================\"}, \"error\": null, \"duracion_ms\": 21.43}], \"tool_sequence\": [\"resolver_fecha\", \"consultar_clima\", \"evaluar_condiciones\", \"consultar_disponibilidad\", \"agendar_cita\"], \"latency_ms\": 47403.63, \"appointment\": {\"exito\": true, \"mensaje\": \"Cita agendada con éxito.\", \"id_cita\": \"718a82ac-c6e6-42cb-a4f3-5db0a8c2f337\", \"fecha\": \"2026-09-29\", \"hora\": \"10:00\", \"veredicto\": \"IDEAL\", \"advertencias\": [], \"comprobante\": \"====================================================\\n           COMPROBANTE OFICIAL DE RESERVA           \\n                  PARACHUTE S.A.                    \\n====================================================\\nID Reserva:    718a82ac-c6e6-42cb-a4f3-5db0a8c2f337\\nCliente:       Test Ideal\\nFecha de salto:2026-09-29\\nFranja horaria:10:00 (duración 1 hora)\\nVeredicto:     IDEAL\\nArquitectura:  centralizada\\nAdvertencias:\\n  * Ninguna\\n====================================================\"}, \"weather\": {\"id_evidencia\": \"6aaca8aa-4136-4e93-b198-1c9a44868179\", \"fecha\": \"2026-09-29\", \"temperatura_c\": 25.0, \"viento_kmh\": 14.5, \"rafaga_kmh\": 22.0, \"precipitacion_mm\": 0.0, \"nubes_pct\": 18.0, \"modo_agregacion\": \"operativo_horario\", \"veredicto_global\": \"IDEAL\", \"es_seguro_saltar\": true, \"motivos\": [\"Todas las condiciones se encuentran dentro de los parámetros ideales.\"], \"advertencias\": [], \"fuente\": \"mock://simulador-condiciones\"}, \"retrieved_faq_ids\": [], \"comprobante\": \"====================================================\\n           COMPROBANTE OFICIAL DE RESERVA           \\n                  PARACHUTE S.A.                    \\n====================================================\\nID Reserva:    718a82ac-c6e6-42cb-a4f3-5db0a8c2f337\\nCliente:       Test Ideal\\nFecha de salto:2026-09-29\\nFranja horaria:10:00 (duración 1 hora)\\nVeredicto:     IDEAL\\nArquitectura:  centralizada\\nAdvertencias:\\n  * Ninguna\\n====================================================\", \"model\": \"z-ai/glm-5.3\", \"architecture\": \"centralizada\", \"error\": null}",
+          "metadata": {
+            "answer": "✅ **Reserva confirmada con éxito**\n\n**Detalles de tu salto:**\n\n| Campo | Detalle |\n|---|---|\n| **ID Reserva** | `718a82ac-c6e6-42cb-a4f3-5db0a8c2f337` |\n| **Cliente** | Test Ideal |\n| **Fecha** | 2026-09-29 |\n| **Horario** | 10:00 (1 hora) |\n| **Clima** | IDEAL (25°C, viento 14.5 km/h, sin precipitaciones) |\n\nLas condiciones meteorológicas son perfectas para el salto, sin advertencias ni restricciones. ¡Te esperamos el 29 de septiembre! 🪂",
+            "tool_calls": [
+              {
+                "nombre": "resolver_fecha",
+                "argumentos": {
+                  "0": "2026-09-29"
+                },
+                "exitosa": true,
+                "resultado": {
+                  "es_valida": true,
+                  "fecha_iso": "2026-09-29",
+                  "mensaje_error": null,
+                  "requiere_aclaracion": false,
+                  "fecha_maxima": "2026-10-03"
+                },
+                "error": null,
+                "duracion_ms": 0.82
+              },
+              {
+                "nombre": "consultar_clima",
+                "argumentos": {
+                  "0": "2026-09-29",
+                  "1": ""
+                },
+                "exitosa": true,
+                "resultado": {
+                  "id_evidencia": "6aaca8aa-4136-4e93-b198-1c9a44868179",
+                  "fecha": "2026-09-29",
+                  "temperatura_c": 25,
+                  "viento_kmh": 14.5,
+                  "rafaga_kmh": 22,
+                  "precipitacion_mm": 0,
+                  "nubes_pct": 18,
+                  "modo_agregacion": "operativo_horario",
+                  "veredicto_global": "IDEAL",
+                  "es_seguro_saltar": true,
+                  "motivos": [
+                    "Todas las condiciones se encuentran dentro de los parámetros ideales."
+                  ],
+                  "advertencias": [],
+                  "fuente": "mock://simulador-condiciones"
+                },
+                "error": null,
+                "duracion_ms": 0.26
+              },
+              {
+                "nombre": "evaluar_condiciones",
+                "argumentos": {
+                  "0": "6aaca8aa-4136-4e93-b198-1c9a44868179"
+                },
+                "exitosa": true,
+                "resultado": {
+                  "id_evidencia": "6aaca8aa-4136-4e93-b198-1c9a44868179",
+                  "fecha": "2026-09-29",
+                  "veredicto": "IDEAL",
+                  "es_seguro": true,
+                  "motivos": [
+                    "Todas las condiciones se encuentran dentro de los parámetros ideales."
+                  ],
+                  "advertencias": [],
+                  "variables": {
+                    "viento": "IDEAL",
+                    "rafagas": "IDEAL",
+                    "precipitacion": "IDEAL",
+                    "nubes": "IDEAL",
+                    "temperatura": "INFORMATIVO"
+                  }
+                },
+                "error": null,
+                "duracion_ms": 0.05
+              },
+              {
+                "nombre": "consultar_disponibilidad",
+                "argumentos": {
+                  "0": "2026-09-29"
+                },
+                "exitosa": true,
+                "resultado": {
+                  "valida": true,
+                  "fecha": "2026-09-29",
+                  "total_cupos": 8,
+                  "cupos_libres": 8,
+                  "franjas_libres": [
+                    "08:00",
+                    "09:00",
+                    "10:00",
+                    "11:00",
+                    "12:00",
+                    "13:00",
+                    "14:00",
+                    "15:00"
+                  ],
+                  "franjas_ocupadas": []
+                },
+                "error": null,
+                "duracion_ms": 14.13
+              },
+              {
+                "nombre": "agendar_cita",
+                "argumentos": {
+                  "0": "Test Ideal",
+                  "1": "2026-09-29",
+                  "2": "10:00",
+                  "3": "6aaca8aa-4136-4e93-b198-1c9a44868179",
+                  "4": "centralizada"
+                },
+                "exitosa": true,
+                "resultado": {
+                  "exito": true,
+                  "mensaje": "Cita agendada con éxito.",
+                  "id_cita": "718a82ac-c6e6-42cb-a4f3-5db0a8c2f337",
+                  "fecha": "2026-09-29",
+                  "hora": "10:00",
+                  "veredicto": "IDEAL",
+                  "advertencias": [],
+                  "comprobante": "====================================================\n           COMPROBANTE OFICIAL DE RESERVA           \n                  PARACHUTE S.A.                    \n====================================================\nID Reserva:    718a82ac-c6e6-42cb-a4f3-5db0a8c2f337\nCliente:       Test Ideal\nFecha de salto:2026-09-29\nFranja horaria:10:00 (duración 1 hora)\nVeredicto:     IDEAL\nArquitectura:  centralizada\nAdvertencias:\n  * Ninguna\n===================================================="
+                },
+                "error": null,
+                "duracion_ms": 21.43
+              }
+            ],
+            "tool_sequence": [
+              "resolver_fecha",
+              "consultar_clima",
+              "evaluar_condiciones",
+              "consultar_disponibilidad",
+              "agendar_cita"
+            ],
+            "latency_ms": 47403.63,
+            "appointment": {
+              "exito": true,
+              "mensaje": "Cita agendada con éxito.",
+              "id_cita": "718a82ac-c6e6-42cb-a4f3-5db0a8c2f337",
+              "fecha": "2026-09-29",
+              "hora": "10:00",
+              "veredicto": "IDEAL",
+              "advertencias": [],
+              "comprobante": "====================================================\n           COMPROBANTE OFICIAL DE RESERVA           \n                  PARACHUTE S.A.                    \n====================================================\nID Reserva:    718a82ac-c6e6-42cb-a4f3-5db0a8c2f337\nCliente:       Test Ideal\nFecha de salto:2026-09-29\nFranja horaria:10:00 (duración 1 hora)\nVeredicto:     IDEAL\nArquitectura:  centralizada\nAdvertencias:\n  * Ninguna\n===================================================="
+            },
+            "weather": {
+              "id_evidencia": "6aaca8aa-4136-4e93-b198-1c9a44868179",
+              "fecha": "2026-09-29",
+              "temperatura_c": 25,
+              "viento_kmh": 14.5,
+              "rafaga_kmh": 22,
+              "precipitacion_mm": 0,
+              "nubes_pct": 18,
+              "modo_agregacion": "operativo_horario",
+              "veredicto_global": "IDEAL",
+              "es_seguro_saltar": true,
+              "motivos": [
+                "Todas las condiciones se encuentran dentro de los parámetros ideales."
+              ],
+              "advertencias": [],
+              "fuente": "mock://simulador-condiciones"
+            },
+            "retrieved_faq_ids": [],
+            "comprobante": "====================================================\n           COMPROBANTE OFICIAL DE RESERVA           \n                  PARACHUTE S.A.                    \n====================================================\nID Reserva:    718a82ac-c6e6-42cb-a4f3-5db0a8c2f337\nCliente:       Test Ideal\nFecha de salto:2026-09-29\nFranja horaria:10:00 (duración 1 hora)\nVeredicto:     IDEAL\nArquitectura:  centralizada\nAdvertencias:\n  * Ninguna\n====================================================",
+            "model": "z-ai/glm-5.3",
+            "architecture": "centralizada",
+            "error": null
+          },
+          "cached": false
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "Reserva ideal con secuencia completa",
+          "vars": {
+            "query": "Quiero reservar un salto para el 2026-09-29 a las 10:00 a nombre de Test Ideal.",
+            "mock_mode": "ideal"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "(() => { const r = JSON.parse(output); return typeof r.latency_ms === 'number' && r.latency_ms < 120000; })()"
+            },
+            {
+              "type": "contains",
+              "value": "IDEAL"
+            },
+            {
+              "type": "regex",
+              "value": "2026-09-29"
+            },
+            {
+              "type": "regex",
+              "value": "10:00"
+            },
+            {
+              "type": "javascript",
+              "value": "(() => { const r = JSON.parse(output); const s = r.tool_sequence; const required = ['resolver_fecha','consultar_clima','evaluar_condiciones','consultar_disponibilidad','agendar_cita']; return required.every(x => s.includes(x)); })()"
+            },
+            {
+              "type": "javascript",
+              "value": "(() => { const r = JSON.parse(output); return r.appointment?.exito === true; })()"
+            }
+          ],
+          "options": {
+            "provider": "file://grader_nvidia.py"
+          },
+          "metadata": {}
+        },
+        "testIdx": 3,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "query": "Quiero reservar un salto para el 2026-09-29 a las 10:00 a nombre de Test Ideal.",
+          "mock_mode": "ideal"
+        },
+        "metadata": {
+          "answer": "✅ **Reserva confirmada con éxito**\n\n**Detalles de tu salto:**\n\n| Campo | Detalle |\n|---|---|\n| **ID Reserva** | `718a82ac-c6e6-42cb-a4f3-5db0a8c2f337` |\n| **Cliente** | Test Ideal |\n| **Fecha** | 2026-09-29 |\n| **Horario** | 10:00 (1 hora) |\n| **Clima** | IDEAL (25°C, viento 14.5 km/h, sin precipitaciones) |\n\nLas condiciones meteorológicas son perfectas para el salto, sin advertencias ni restricciones. ¡Te esperamos el 29 de septiembre! 🪂",
+          "tool_calls": [
+            {
+              "nombre": "resolver_fecha",
+              "argumentos": {
+                "0": "2026-09-29"
+              },
+              "exitosa": true,
+              "resultado": {
+                "es_valida": true,
+                "fecha_iso": "2026-09-29",
+                "mensaje_error": null,
+                "requiere_aclaracion": false,
+                "fecha_maxima": "2026-10-03"
+              },
+              "error": null,
+              "duracion_ms": 0.82
+            },
+            {
+              "nombre": "consultar_clima",
+              "argumentos": {
+                "0": "2026-09-29",
+                "1": ""
+              },
+              "exitosa": true,
+              "resultado": {
+                "id_evidencia": "6aaca8aa-4136-4e93-b198-1c9a44868179",
+                "fecha": "2026-09-29",
+                "temperatura_c": 25,
+                "viento_kmh": 14.5,
+                "rafaga_kmh": 22,
+                "precipitacion_mm": 0,
+                "nubes_pct": 18,
+                "modo_agregacion": "operativo_horario",
+                "veredicto_global": "IDEAL",
+                "es_seguro_saltar": true,
+                "motivos": [
+                  "Todas las condiciones se encuentran dentro de los parámetros ideales."
+                ],
+                "advertencias": [],
+                "fuente": "mock://simulador-condiciones"
+              },
+              "error": null,
+              "duracion_ms": 0.26
+            },
+            {
+              "nombre": "evaluar_condiciones",
+              "argumentos": {
+                "0": "6aaca8aa-4136-4e93-b198-1c9a44868179"
+              },
+              "exitosa": true,
+              "resultado": {
+                "id_evidencia": "6aaca8aa-4136-4e93-b198-1c9a44868179",
+                "fecha": "2026-09-29",
+                "veredicto": "IDEAL",
+                "es_seguro": true,
+                "motivos": [
+                  "Todas las condiciones se encuentran dentro de los parámetros ideales."
+                ],
+                "advertencias": [],
+                "variables": {
+                  "viento": "IDEAL",
+                  "rafagas": "IDEAL",
+                  "precipitacion": "IDEAL",
+                  "nubes": "IDEAL",
+                  "temperatura": "INFORMATIVO"
+                }
+              },
+              "error": null,
+              "duracion_ms": 0.05
+            },
+            {
+              "nombre": "consultar_disponibilidad",
+              "argumentos": {
+                "0": "2026-09-29"
+              },
+              "exitosa": true,
+              "resultado": {
+                "valida": true,
+                "fecha": "2026-09-29",
+                "total_cupos": 8,
+                "cupos_libres": 8,
+                "franjas_libres": [
+                  "08:00",
+                  "09:00",
+                  "10:00",
+                  "11:00",
+                  "12:00",
+                  "13:00",
+                  "14:00",
+                  "15:00"
+                ],
+                "franjas_ocupadas": []
+              },
+              "error": null,
+              "duracion_ms": 14.13
+            },
+            {
+              "nombre": "agendar_cita",
+              "argumentos": {
+                "0": "Test Ideal",
+                "1": "2026-09-29",
+                "2": "10:00",
+                "3": "6aaca8aa-4136-4e93-b198-1c9a44868179",
+                "4": "centralizada"
+              },
+              "exitosa": true,
+              "resultado": {
+                "exito": true,
+                "mensaje": "Cita agendada con éxito.",
+                "id_cita": "718a82ac-c6e6-42cb-a4f3-5db0a8c2f337",
+                "fecha": "2026-09-29",
+                "hora": "10:00",
+                "veredicto": "IDEAL",
+                "advertencias": [],
+                "comprobante": "====================================================\n           COMPROBANTE OFICIAL DE RESERVA           \n                  PARACHUTE S.A.                    \n====================================================\nID Reserva:    718a82ac-c6e6-42cb-a4f3-5db0a8c2f337\nCliente:       Test Ideal\nFecha de salto:2026-09-29\nFranja horaria:10:00 (duración 1 hora)\nVeredicto:     IDEAL\nArquitectura:  centralizada\nAdvertencias:\n  * Ninguna\n===================================================="
+              },
+              "error": null,
+              "duracion_ms": 21.43
+            }
+          ],
+          "tool_sequence": [
+            "resolver_fecha",
+            "consultar_clima",
+            "evaluar_condiciones",
+            "consultar_disponibilidad",
+            "agendar_cita"
+          ],
+          "latency_ms": 47403.63,
+          "appointment": {
+            "exito": true,
+            "mensaje": "Cita agendada con éxito.",
+            "id_cita": "718a82ac-c6e6-42cb-a4f3-5db0a8c2f337",
+            "fecha": "2026-09-29",
+            "hora": "10:00",
+            "veredicto": "IDEAL",
+            "advertencias": [],
+            "comprobante": "====================================================\n           COMPROBANTE OFICIAL DE RESERVA           \n                  PARACHUTE S.A.                    \n====================================================\nID Reserva:    718a82ac-c6e6-42cb-a4f3-5db0a8c2f337\nCliente:       Test Ideal\nFecha de salto:2026-09-29\nFranja horaria:10:00 (duración 1 hora)\nVeredicto:     IDEAL\nArquitectura:  centralizada\nAdvertencias:\n  * Ninguna\n===================================================="
+          },
+          "weather": {
+            "id_evidencia": "6aaca8aa-4136-4e93-b198-1c9a44868179",
+            "fecha": "2026-09-29",
+            "temperatura_c": 25,
+            "viento_kmh": 14.5,
+            "rafaga_kmh": 22,
+            "precipitacion_mm": 0,
+            "nubes_pct": 18,
+            "modo_agregacion": "operativo_horario",
+            "veredicto_global": "IDEAL",
+            "es_seguro_saltar": true,
+            "motivos": [
+              "Todas las condiciones se encuentran dentro de los parámetros ideales."
+            ],
+            "advertencias": [],
+            "fuente": "mock://simulador-condiciones"
+          },
+          "retrieved_faq_ids": [],
+          "comprobante": "====================================================\n           COMPROBANTE OFICIAL DE RESERVA           \n                  PARACHUTE S.A.                    \n====================================================\nID Reserva:    718a82ac-c6e6-42cb-a4f3-5db0a8c2f337\nCliente:       Test Ideal\nFecha de salto:2026-09-29\nFranja horaria:10:00 (duración 1 hora)\nVeredicto:     IDEAL\nArquitectura:  centralizada\nAdvertencias:\n  * Ninguna\n====================================================",
+          "model": "z-ai/glm-5.3",
+          "architecture": "centralizada",
+          "error": null,
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Assertion passed",
+              "assertion": {
+                "type": "javascript",
+                "value": "(() => { const r = JSON.parse(output); return typeof r.latency_ms === 'number' && r.latency_ms < 120000; })()"
+              }
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Assertion passed",
+              "assertion": {
+                "type": "contains",
+                "value": "MARGINAL"
+              }
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Assertion passed",
+              "assertion": {
+                "type": "regex",
+                "value": "tándem experimentado"
+              }
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Assertion passed",
+              "assertion": {
+                "type": "javascript",
+                "value": "(() => { const r = JSON.parse(output); return r.appointment?.exito === true; })()"
+              }
+            }
+          ]
+        },
+        "id": "b487c21c-7f3e-4e34-a63b-459dccba30c1",
+        "latencyMs": 90626,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Reserva un salto para el 2026-09-29 a las 11:00 a nombre de Test Marginal.",
+          "label": "{{query}}",
+          "config": {
+            "provider": "file://grader_nvidia.py"
+          }
+        },
+        "promptId": "8868fc514e5f7bd1a350480c5a825cd0f5b47b6c0c8da0ca62be71158f638c23",
+        "promptIdx": 0,
+        "provider": {
+          "id": "file://provider_centralizada.py",
+          "label": "centralizada-nvidia"
+        },
+        "response": {
+          "output": "{\"answer\": \"✅ **Reserva confirmada**\\n\\n**Detalles de la cita:**\\n- **Cliente:** Test Marginal\\n- **Fecha:** 2026-09-29 a las 11:00\\n- **ID de reserva:** `33167798-b6e2-43ed-a92d-a8206f367529`\\n\\n**Condiciones meteorológicas — Veredicto: MARGINAL**\\n- Temperatura: 26.5 °C\\n- Viento en superficie: 23.5 km/h (marginal)\\n- Ráfagas: 28.0 km/h\\n- Precipitación: 0.0 mm\\n\\n**Advertencias importantes:**\\n- El salto se realizará **solo con un instructor tándem experimentado** debido al viento en superficie.\\n- Visibilidad reducida por nubosidad moderada (45%).\\n- Se recomienda verificación final del pronóstico la mañana del salto.\\n\\nPor favor, arrive con anticipación. Si el clima cambia a PROHIBIDO el día del salto, la reserva podría cancelarse por seguridad.\", \"tool_calls\": [{\"nombre\": \"resolver_fecha\", \"argumentos\": {\"0\": \"2026-09-29\"}, \"exitosa\": true, \"resultado\": {\"es_valida\": true, \"fecha_iso\": \"2026-09-29\", \"mensaje_error\": null, \"requiere_aclaracion\": false, \"fecha_maxima\": \"2026-10-03\"}, \"error\": null, \"duracion_ms\": 0.08}, {\"nombre\": \"consultar_disponibilidad\", \"argumentos\": {\"0\": \"2026-09-29\"}, \"exitosa\": true, \"resultado\": {\"valida\": true, \"fecha\": \"2026-09-29\", \"total_cupos\": 8, \"cupos_libres\": 8, \"franjas_libres\": [\"08:00\", \"09:00\", \"10:00\", \"11:00\", \"12:00\", \"13:00\", \"14:00\", \"15:00\"], \"franjas_ocupadas\": []}, \"error\": null, \"duracion_ms\": 11.4}, {\"nombre\": \"consultar_clima\", \"argumentos\": {\"0\": \"2026-09-29\", \"1\": \"\"}, \"exitosa\": true, \"resultado\": {\"id_evidencia\": \"481f4829-f487-4446-9cad-c71a3f1bf882\", \"fecha\": \"2026-09-29\", \"temperatura_c\": 26.5, \"viento_kmh\": 23.5, \"rafaga_kmh\": 28.0, \"precipitacion_mm\": 0.0, \"nubes_pct\": 45.0, \"modo_agregacion\": \"operativo_horario\", \"veredicto_global\": \"MARGINAL\", \"es_seguro_saltar\": true, \"motivos\": [\"Viento en superficie (23.5 km/h) en rango marginal [20-28 km/h].\", \"Cobertura nubosa (45.0%) en rango marginal [30%-75%].\"], \"advertencias\": [\"Viento marginal: solo tándem experimentado.\", \"Nubosidad moderada: visibilidad reducida respecto al óptimo.\"], \"fuente\": \"mock://simulador-condiciones\"}, \"error\": null, \"duracion_ms\": 0.22}, {\"nombre\": \"evaluar_condiciones\", \"argumentos\": {\"0\": \"481f4829-f487-4446-9cad-c71a3f1bf882\"}, \"exitosa\": true, \"resultado\": {\"id_evidencia\": \"481f4829-f487-4446-9cad-c71a3f1bf882\", \"fecha\": \"2026-09-29\", \"veredicto\": \"MARGINAL\", \"es_seguro\": true, \"motivos\": [\"Viento en superficie (23.5 km/h) en rango marginal [20-28 km/h].\", \"Cobertura nubosa (45.0%) en rango marginal [30%-75%].\"], \"advertencias\": [\"Viento marginal: solo tándem experimentado.\", \"Nubosidad moderada: visibilidad reducida respecto al óptimo.\"], \"variables\": {\"viento\": \"MARGINAL\", \"rafagas\": \"IDEAL\", \"precipitacion\": \"IDEAL\", \"nubes\": \"MARGINAL\", \"temperatura\": \"INFORMATIVO\"}}, \"error\": null, \"duracion_ms\": 0.06}, {\"nombre\": \"consultar_disponibilidad\", \"argumentos\": {\"0\": \"2026-09-29\"}, \"exitosa\": true, \"resultado\": {\"valida\": true, \"fecha\": \"2026-09-29\", \"total_cupos\": 8, \"cupos_libres\": 8, \"franjas_libres\": [\"08:00\", \"09:00\", \"10:00\", \"11:00\", \"12:00\", \"13:00\", \"14:00\", \"15:00\"], \"franjas_ocupadas\": []}, \"error\": null, \"duracion_ms\": 11.67}, {\"nombre\": \"agendar_cita\", \"argumentos\": {\"0\": \"Test Marginal\", \"1\": \"2026-09-29\", \"2\": \"11:00\", \"3\": \"481f4829-f487-4446-9cad-c71a3f1bf882\", \"4\": \"centralizada\"}, \"exitosa\": true, \"resultado\": {\"exito\": true, \"mensaje\": \"Cita agendada con éxito.\", \"id_cita\": \"33167798-b6e2-43ed-a92d-a8206f367529\", \"fecha\": \"2026-09-29\", \"hora\": \"11:00\", \"veredicto\": \"MARGINAL\", \"advertencias\": [\"Viento marginal: solo tándem experimentado.\", \"Nubosidad moderada: visibilidad reducida respecto al óptimo.\"], \"comprobante\": \"====================================================\\n           COMPROBANTE OFICIAL DE RESERVA           \\n                  PARACHUTE S.A.                    \\n====================================================\\nID Reserva:    33167798-b6e2-43ed-a92d-a8206f367529\\nCliente:       Test Marginal\\nFecha de salto:2026-09-29\\nFranja horaria:11:00 (duración 1 hora)\\nVeredicto:     MARGINAL\\nArquitectura:  centralizada\\nAdvertencias:\\n  * Viento marginal: solo tándem experimentado.\\n  * Nubosidad moderada: visibilidad reducida respecto al óptimo.\\n====================================================\"}, \"error\": null, \"duracion_ms\": 18.54}], \"tool_sequence\": [\"resolver_fecha\", \"consultar_disponibilidad\", \"consultar_clima\", \"evaluar_condiciones\", \"consultar_disponibilidad\", \"agendar_cita\"], \"latency_ms\": 90621.12, \"appointment\": {\"exito\": true, \"mensaje\": \"Cita agendada con éxito.\", \"id_cita\": \"33167798-b6e2-43ed-a92d-a8206f367529\", \"fecha\": \"2026-09-29\", \"hora\": \"11:00\", \"veredicto\": \"MARGINAL\", \"advertencias\": [\"Viento marginal: solo tándem experimentado.\", \"Nubosidad moderada: visibilidad reducida respecto al óptimo.\"], \"comprobante\": \"====================================================\\n           COMPROBANTE OFICIAL DE RESERVA           \\n                  PARACHUTE S.A.                    \\n====================================================\\nID Reserva:    33167798-b6e2-43ed-a92d-a8206f367529\\nCliente:       Test Marginal\\nFecha de salto:2026-09-29\\nFranja horaria:11:00 (duración 1 hora)\\nVeredicto:     MARGINAL\\nArquitectura:  centralizada\\nAdvertencias:\\n  * Viento marginal: solo tándem experimentado.\\n  * Nubosidad moderada: visibilidad reducida respecto al óptimo.\\n====================================================\"}, \"weather\": {\"id_evidencia\": \"481f4829-f487-4446-9cad-c71a3f1bf882\", \"fecha\": \"2026-09-29\", \"temperatura_c\": 26.5, \"viento_kmh\": 23.5, \"rafaga_kmh\": 28.0, \"precipitacion_mm\": 0.0, \"nubes_pct\": 45.0, \"modo_agregacion\": \"operativo_horario\", \"veredicto_global\": \"MARGINAL\", \"es_seguro_saltar\": true, \"motivos\": [\"Viento en superficie (23.5 km/h) en rango marginal [20-28 km/h].\", \"Cobertura nubosa (45.0%) en rango marginal [30%-75%].\"], \"advertencias\": [\"Viento marginal: solo tándem experimentado.\", \"Nubosidad moderada: visibilidad reducida respecto al óptimo.\"], \"fuente\": \"mock://simulador-condiciones\"}, \"retrieved_faq_ids\": [], \"comprobante\": \"====================================================\\n           COMPROBANTE OFICIAL DE RESERVA           \\n                  PARACHUTE S.A.                    \\n====================================================\\nID Reserva:    33167798-b6e2-43ed-a92d-a8206f367529\\nCliente:       Test Marginal\\nFecha de salto:2026-09-29\\nFranja horaria:11:00 (duración 1 hora)\\nVeredicto:     MARGINAL\\nArquitectura:  centralizada\\nAdvertencias:\\n  * Viento marginal: solo tándem experimentado.\\n  * Nubosidad moderada: visibilidad reducida respecto al óptimo.\\n====================================================\", \"model\": \"z-ai/glm-5.3\", \"architecture\": \"centralizada\", \"error\": null}",
+          "metadata": {
+            "answer": "✅ **Reserva confirmada**\n\n**Detalles de la cita:**\n- **Cliente:** Test Marginal\n- **Fecha:** 2026-09-29 a las 11:00\n- **ID de reserva:** `33167798-b6e2-43ed-a92d-a8206f367529`\n\n**Condiciones meteorológicas — Veredicto: MARGINAL**\n- Temperatura: 26.5 °C\n- Viento en superficie: 23.5 km/h (marginal)\n- Ráfagas: 28.0 km/h\n- Precipitación: 0.0 mm\n\n**Advertencias importantes:**\n- El salto se realizará **solo con un instructor tándem experimentado** debido al viento en superficie.\n- Visibilidad reducida por nubosidad moderada (45%).\n- Se recomienda verificación final del pronóstico la mañana del salto.\n\nPor favor, arrive con anticipación. Si el clima cambia a PROHIBIDO el día del salto, la reserva podría cancelarse por seguridad.",
+            "tool_calls": [
+              {
+                "nombre": "resolver_fecha",
+                "argumentos": {
+                  "0": "2026-09-29"
+                },
+                "exitosa": true,
+                "resultado": {
+                  "es_valida": true,
+                  "fecha_iso": "2026-09-29",
+                  "mensaje_error": null,
+                  "requiere_aclaracion": false,
+                  "fecha_maxima": "2026-10-03"
+                },
+                "error": null,
+                "duracion_ms": 0.08
+              },
+              {
+                "nombre": "consultar_disponibilidad",
+                "argumentos": {
+                  "0": "2026-09-29"
+                },
+                "exitosa": true,
+                "resultado": {
+                  "valida": true,
+                  "fecha": "2026-09-29",
+                  "total_cupos": 8,
+                  "cupos_libres": 8,
+                  "franjas_libres": [
+                    "08:00",
+                    "09:00",
+                    "10:00",
+                    "11:00",
+                    "12:00",
+                    "13:00",
+                    "14:00",
+                    "15:00"
+                  ],
+                  "franjas_ocupadas": []
+                },
+                "error": null,
+                "duracion_ms": 11.4
+              },
+              {
+                "nombre": "consultar_clima",
+                "argumentos": {
+                  "0": "2026-09-29",
+                  "1": ""
+                },
+                "exitosa": true,
+                "resultado": {
+                  "id_evidencia": "481f4829-f487-4446-9cad-c71a3f1bf882",
+                  "fecha": "2026-09-29",
+                  "temperatura_c": 26.5,
+                  "viento_kmh": 23.5,
+                  "rafaga_kmh": 28,
+                  "precipitacion_mm": 0,
+                  "nubes_pct": 45,
+                  "modo_agregacion": "operativo_horario",
+                  "veredicto_global": "MARGINAL",
+                  "es_seguro_saltar": true,
+                  "motivos": [
+                    "Viento en superficie (23.5 km/h) en rango marginal [20-28 km/h].",
+                    "Cobertura nubosa (45.0%) en rango marginal [30%-75%]."
+                  ],
+                  "advertencias": [
+                    "Viento marginal: solo tándem experimentado.",
+                    "Nubosidad moderada: visibilidad reducida respecto al óptimo."
+                  ],
+                  "fuente": "mock://simulador-condiciones"
+                },
+                "error": null,
+                "duracion_ms": 0.22
+              },
+              {
+                "nombre": "evaluar_condiciones",
+                "argumentos": {
+                  "0": "481f4829-f487-4446-9cad-c71a3f1bf882"
+                },
+                "exitosa": true,
+                "resultado": {
+                  "id_evidencia": "481f4829-f487-4446-9cad-c71a3f1bf882",
+                  "fecha": "2026-09-29",
+                  "veredicto": "MARGINAL",
+                  "es_seguro": true,
+                  "motivos": [
+                    "Viento en superficie (23.5 km/h) en rango marginal [20-28 km/h].",
+                    "Cobertura nubosa (45.0%) en rango marginal [30%-75%]."
+                  ],
+                  "advertencias": [
+                    "Viento marginal: solo tándem experimentado.",
+                    "Nubosidad moderada: visibilidad reducida respecto al óptimo."
+                  ],
+                  "variables": {
+                    "viento": "MARGINAL",
+                    "rafagas": "IDEAL",
+                    "precipitacion": "IDEAL",
+                    "nubes": "MARGINAL",
+                    "temperatura": "INFORMATIVO"
+                  }
+                },
+                "error": null,
+                "duracion_ms": 0.06
+              },
+              {
+                "nombre": "consultar_disponibilidad",
+                "argumentos": {
+                  "0": "2026-09-29"
+                },
+                "exitosa": true,
+                "resultado": {
+                  "valida": true,
+                  "fecha": "2026-09-29",
+                  "total_cupos": 8,
+                  "cupos_libres": 8,
+                  "franjas_libres": [
+                    "08:00",
+                    "09:00",
+                    "10:00",
+                    "11:00",
+                    "12:00",
+                    "13:00",
+                    "14:00",
+                    "15:00"
+                  ],
+                  "franjas_ocupadas": []
+                },
+                "error": null,
+                "duracion_ms": 11.67
+              },
+              {
+                "nombre": "agendar_cita",
+                "argumentos": {
+                  "0": "Test Marginal",
+                  "1": "2026-09-29",
+                  "2": "11:00",
+                  "3": "481f4829-f487-4446-9cad-c71a3f1bf882",
+                  "4": "centralizada"
+                },
+                "exitosa": true,
+                "resultado": {
+                  "exito": true,
+                  "mensaje": "Cita agendada con éxito.",
+                  "id_cita": "33167798-b6e2-43ed-a92d-a8206f367529",
+                  "fecha": "2026-09-29",
+                  "hora": "11:00",
+                  "veredicto": "MARGINAL",
+                  "advertencias": [
+                    "Viento marginal: solo tándem experimentado.",
+                    "Nubosidad moderada: visibilidad reducida respecto al óptimo."
+                  ],
+                  "comprobante": "====================================================\n           COMPROBANTE OFICIAL DE RESERVA           \n                  PARACHUTE S.A.                    \n====================================================\nID Reserva:    33167798-b6e2-43ed-a92d-a8206f367529\nCliente:       Test Marginal\nFecha de salto:2026-09-29\nFranja horaria:11:00 (duración 1 hora)\nVeredicto:     MARGINAL\nArquitectura:  centralizada\nAdvertencias:\n  * Viento marginal: solo tándem experimentado.\n  * Nubosidad moderada: visibilidad reducida respecto al óptimo.\n===================================================="
+                },
+                "error": null,
+                "duracion_ms": 18.54
+              }
+            ],
+            "tool_sequence": [
+              "resolver_fecha",
+              "consultar_disponibilidad",
+              "consultar_clima",
+              "evaluar_condiciones",
+              "consultar_disponibilidad",
+              "agendar_cita"
+            ],
+            "latency_ms": 90621.12,
+            "appointment": {
+              "exito": true,
+              "mensaje": "Cita agendada con éxito.",
+              "id_cita": "33167798-b6e2-43ed-a92d-a8206f367529",
+              "fecha": "2026-09-29",
+              "hora": "11:00",
+              "veredicto": "MARGINAL",
+              "advertencias": [
+                "Viento marginal: solo tándem experimentado.",
+                "Nubosidad moderada: visibilidad reducida respecto al óptimo."
+              ],
+              "comprobante": "====================================================\n           COMPROBANTE OFICIAL DE RESERVA           \n                  PARACHUTE S.A.                    \n====================================================\nID Reserva:    33167798-b6e2-43ed-a92d-a8206f367529\nCliente:       Test Marginal\nFecha de salto:2026-09-29\nFranja horaria:11:00 (duración 1 hora)\nVeredicto:     MARGINAL\nArquitectura:  centralizada\nAdvertencias:\n  * Viento marginal: solo tándem experimentado.\n  * Nubosidad moderada: visibilidad reducida respecto al óptimo.\n===================================================="
+            },
+            "weather": {
+              "id_evidencia": "481f4829-f487-4446-9cad-c71a3f1bf882",
+              "fecha": "2026-09-29",
+              "temperatura_c": 26.5,
+              "viento_kmh": 23.5,
+              "rafaga_kmh": 28,
+              "precipitacion_mm": 0,
+              "nubes_pct": 45,
+              "modo_agregacion": "operativo_horario",
+              "veredicto_global": "MARGINAL",
+              "es_seguro_saltar": true,
+              "motivos": [
+                "Viento en superficie (23.5 km/h) en rango marginal [20-28 km/h].",
+                "Cobertura nubosa (45.0%) en rango marginal [30%-75%]."
+              ],
+              "advertencias": [
+                "Viento marginal: solo tándem experimentado.",
+                "Nubosidad moderada: visibilidad reducida respecto al óptimo."
+              ],
+              "fuente": "mock://simulador-condiciones"
+            },
+            "retrieved_faq_ids": [],
+            "comprobante": "====================================================\n           COMPROBANTE OFICIAL DE RESERVA           \n                  PARACHUTE S.A.                    \n====================================================\nID Reserva:    33167798-b6e2-43ed-a92d-a8206f367529\nCliente:       Test Marginal\nFecha de salto:2026-09-29\nFranja horaria:11:00 (duración 1 hora)\nVeredicto:     MARGINAL\nArquitectura:  centralizada\nAdvertencias:\n  * Viento marginal: solo tándem experimentado.\n  * Nubosidad moderada: visibilidad reducida respecto al óptimo.\n====================================================",
+            "model": "z-ai/glm-5.3",
+            "architecture": "centralizada",
+            "error": null
+          },
+          "cached": false
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "Reserva marginal con advertencia",
+          "vars": {
+            "query": "Reserva un salto para el 2026-09-29 a las 11:00 a nombre de Test Marginal.",
+            "mock_mode": "marginal"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "(() => { const r = JSON.parse(output); return typeof r.latency_ms === 'number' && r.latency_ms < 120000; })()"
+            },
+            {
+              "type": "contains",
+              "value": "MARGINAL"
+            },
+            {
+              "type": "regex",
+              "value": "tándem experimentado"
+            },
+            {
+              "type": "javascript",
+              "value": "(() => { const r = JSON.parse(output); return r.appointment?.exito === true; })()"
+            }
+          ],
+          "options": {
+            "provider": "file://grader_nvidia.py"
+          },
+          "metadata": {}
+        },
+        "testIdx": 4,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "query": "Reserva un salto para el 2026-09-29 a las 11:00 a nombre de Test Marginal.",
+          "mock_mode": "marginal"
+        },
+        "metadata": {
+          "answer": "✅ **Reserva confirmada**\n\n**Detalles de la cita:**\n- **Cliente:** Test Marginal\n- **Fecha:** 2026-09-29 a las 11:00\n- **ID de reserva:** `33167798-b6e2-43ed-a92d-a8206f367529`\n\n**Condiciones meteorológicas — Veredicto: MARGINAL**\n- Temperatura: 26.5 °C\n- Viento en superficie: 23.5 km/h (marginal)\n- Ráfagas: 28.0 km/h\n- Precipitación: 0.0 mm\n\n**Advertencias importantes:**\n- El salto se realizará **solo con un instructor tándem experimentado** debido al viento en superficie.\n- Visibilidad reducida por nubosidad moderada (45%).\n- Se recomienda verificación final del pronóstico la mañana del salto.\n\nPor favor, arrive con anticipación. Si el clima cambia a PROHIBIDO el día del salto, la reserva podría cancelarse por seguridad.",
+          "tool_calls": [
+            {
+              "nombre": "resolver_fecha",
+              "argumentos": {
+                "0": "2026-09-29"
+              },
+              "exitosa": true,
+              "resultado": {
+                "es_valida": true,
+                "fecha_iso": "2026-09-29",
+                "mensaje_error": null,
+                "requiere_aclaracion": false,
+                "fecha_maxima": "2026-10-03"
+              },
+              "error": null,
+              "duracion_ms": 0.08
+            },
+            {
+              "nombre": "consultar_disponibilidad",
+              "argumentos": {
+                "0": "2026-09-29"
+              },
+              "exitosa": true,
+              "resultado": {
+                "valida": true,
+                "fecha": "2026-09-29",
+                "total_cupos": 8,
+                "cupos_libres": 8,
+                "franjas_libres": [
+                  "08:00",
+                  "09:00",
+                  "10:00",
+                  "11:00",
+                  "12:00",
+                  "13:00",
+                  "14:00",
+                  "15:00"
+                ],
+                "franjas_ocupadas": []
+              },
+              "error": null,
+              "duracion_ms": 11.4
+            },
+            {
+              "nombre": "consultar_clima",
+              "argumentos": {
+                "0": "2026-09-29",
+                "1": ""
+              },
+              "exitosa": true,
+              "resultado": {
+                "id_evidencia": "481f4829-f487-4446-9cad-c71a3f1bf882",
+                "fecha": "2026-09-29",
+                "temperatura_c": 26.5,
+                "viento_kmh": 23.5,
+                "rafaga_kmh": 28,
+                "precipitacion_mm": 0,
+                "nubes_pct": 45,
+                "modo_agregacion": "operativo_horario",
+                "veredicto_global": "MARGINAL",
+                "es_seguro_saltar": true,
+                "motivos": [
+                  "Viento en superficie (23.5 km/h) en rango marginal [20-28 km/h].",
+                  "Cobertura nubosa (45.0%) en rango marginal [30%-75%]."
+                ],
+                "advertencias": [
+                  "Viento marginal: solo tándem experimentado.",
+                  "Nubosidad moderada: visibilidad reducida respecto al óptimo."
+                ],
+                "fuente": "mock://simulador-condiciones"
+              },
+              "error": null,
+              "duracion_ms": 0.22
+            },
+            {
+              "nombre": "evaluar_condiciones",
+              "argumentos": {
+                "0": "481f4829-f487-4446-9cad-c71a3f1bf882"
+              },
+              "exitosa": true,
+              "resultado": {
+                "id_evidencia": "481f4829-f487-4446-9cad-c71a3f1bf882",
+                "fecha": "2026-09-29",
+                "veredicto": "MARGINAL",
+                "es_seguro": true,
+                "motivos": [
+                  "Viento en superficie (23.5 km/h) en rango marginal [20-28 km/h].",
+                  "Cobertura nubosa (45.0%) en rango marginal [30%-75%]."
+                ],
+                "advertencias": [
+                  "Viento marginal: solo tándem experimentado.",
+                  "Nubosidad moderada: visibilidad reducida respecto al óptimo."
+                ],
+                "variables": {
+                  "viento": "MARGINAL",
+                  "rafagas": "IDEAL",
+                  "precipitacion": "IDEAL",
+                  "nubes": "MARGINAL",
+                  "temperatura": "INFORMATIVO"
+                }
+              },
+              "error": null,
+              "duracion_ms": 0.06
+            },
+            {
+              "nombre": "consultar_disponibilidad",
+              "argumentos": {
+                "0": "2026-09-29"
+              },
+              "exitosa": true,
+              "resultado": {
+                "valida": true,
+                "fecha": "2026-09-29",
+                "total_cupos": 8,
+                "cupos_libres": 8,
+                "franjas_libres": [
+                  "08:00",
+                  "09:00",
+                  "10:00",
+                  "11:00",
+                  "12:00",
+                  "13:00",
+                  "14:00",
+                  "15:00"
+                ],
+                "franjas_ocupadas": []
+              },
+              "error": null,
+              "duracion_ms": 11.67
+            },
+            {
+              "nombre": "agendar_cita",
+              "argumentos": {
+                "0": "Test Marginal",
+                "1": "2026-09-29",
+                "2": "11:00",
+                "3": "481f4829-f487-4446-9cad-c71a3f1bf882",
+                "4": "centralizada"
+              },
+              "exitosa": true,
+              "resultado": {
+                "exito": true,
+                "mensaje": "Cita agendada con éxito.",
+                "id_cita": "33167798-b6e2-43ed-a92d-a8206f367529",
+                "fecha": "2026-09-29",
+                "hora": "11:00",
+                "veredicto": "MARGINAL",
+                "advertencias": [
+                  "Viento marginal: solo tándem experimentado.",
+                  "Nubosidad moderada: visibilidad reducida respecto al óptimo."
+                ],
+                "comprobante": "====================================================\n           COMPROBANTE OFICIAL DE RESERVA           \n                  PARACHUTE S.A.                    \n====================================================\nID Reserva:    33167798-b6e2-43ed-a92d-a8206f367529\nCliente:       Test Marginal\nFecha de salto:2026-09-29\nFranja horaria:11:00 (duración 1 hora)\nVeredicto:     MARGINAL\nArquitectura:  centralizada\nAdvertencias:\n  * Viento marginal: solo tándem experimentado.\n  * Nubosidad moderada: visibilidad reducida respecto al óptimo.\n===================================================="
+              },
+              "error": null,
+              "duracion_ms": 18.54
+            }
+          ],
+          "tool_sequence": [
+            "resolver_fecha",
+            "consultar_disponibilidad",
+            "consultar_clima",
+            "evaluar_condiciones",
+            "consultar_disponibilidad",
+            "agendar_cita"
+          ],
+          "latency_ms": 90621.12,
+          "appointment": {
+            "exito": true,
+            "mensaje": "Cita agendada con éxito.",
+            "id_cita": "33167798-b6e2-43ed-a92d-a8206f367529",
+            "fecha": "2026-09-29",
+            "hora": "11:00",
+            "veredicto": "MARGINAL",
+            "advertencias": [
+              "Viento marginal: solo tándem experimentado.",
+              "Nubosidad moderada: visibilidad reducida respecto al óptimo."
+            ],
+            "comprobante": "====================================================\n           COMPROBANTE OFICIAL DE RESERVA           \n                  PARACHUTE S.A.                    \n====================================================\nID Reserva:    33167798-b6e2-43ed-a92d-a8206f367529\nCliente:       Test Marginal\nFecha de salto:2026-09-29\nFranja horaria:11:00 (duración 1 hora)\nVeredicto:     MARGINAL\nArquitectura:  centralizada\nAdvertencias:\n  * Viento marginal: solo tándem experimentado.\n  * Nubosidad moderada: visibilidad reducida respecto al óptimo.\n===================================================="
+          },
+          "weather": {
+            "id_evidencia": "481f4829-f487-4446-9cad-c71a3f1bf882",
+            "fecha": "2026-09-29",
+            "temperatura_c": 26.5,
+            "viento_kmh": 23.5,
+            "rafaga_kmh": 28,
+            "precipitacion_mm": 0,
+            "nubes_pct": 45,
+            "modo_agregacion": "operativo_horario",
+            "veredicto_global": "MARGINAL",
+            "es_seguro_saltar": true,
+            "motivos": [
+              "Viento en superficie (23.5 km/h) en rango marginal [20-28 km/h].",
+              "Cobertura nubosa (45.0%) en rango marginal [30%-75%]."
+            ],
+            "advertencias": [
+              "Viento marginal: solo tándem experimentado.",
+              "Nubosidad moderada: visibilidad reducida respecto al óptimo."
+            ],
+            "fuente": "mock://simulador-condiciones"
+          },
+          "retrieved_faq_ids": [],
+          "comprobante": "====================================================\n           COMPROBANTE OFICIAL DE RESERVA           \n                  PARACHUTE S.A.                    \n====================================================\nID Reserva:    33167798-b6e2-43ed-a92d-a8206f367529\nCliente:       Test Marginal\nFecha de salto:2026-09-29\nFranja horaria:11:00 (duración 1 hora)\nVeredicto:     MARGINAL\nArquitectura:  centralizada\nAdvertencias:\n  * Viento marginal: solo tándem experimentado.\n  * Nubosidad moderada: visibilidad reducida respecto al óptimo.\n====================================================",
+          "model": "z-ai/glm-5.3",
+          "architecture": "centralizada",
+          "error": null,
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Assertion passed",
+              "assertion": {
+                "type": "javascript",
+                "value": "(() => { const r = JSON.parse(output); return typeof r.latency_ms === 'number' && r.latency_ms < 120000; })()"
+              }
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Assertion passed",
+              "assertion": {
+                "type": "contains",
+                "value": "PROHIBIDO"
+              }
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Assertion passed",
+              "assertion": {
+                "type": "regex",
+                "value": "DENEGADA|denegada|RECHAZADA|rechazada|rechazará|[Nn]o puedo proceder"
+              }
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Assertion passed",
+              "assertion": {
+                "type": "javascript",
+                "value": "(() => { const r = JSON.parse(output); return !r.tool_sequence.includes('agendar_cita'); })()"
+              }
+            }
+          ]
+        },
+        "id": "f144c879-4806-4058-9374-558fe7298c06",
+        "latencyMs": 73551,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Reserva un salto para el 2026-09-29 a las 12:00 a nombre de Test Prohibido.",
+          "label": "{{query}}",
+          "config": {
+            "provider": "file://grader_nvidia.py"
+          }
+        },
+        "promptId": "8868fc514e5f7bd1a350480c5a825cd0f5b47b6c0c8da0ca62be71158f638c23",
+        "promptIdx": 0,
+        "provider": {
+          "id": "file://provider_centralizada.py",
+          "label": "centralizada-nvidia"
+        },
+        "response": {
+          "output": "{\"answer\": \"⛔ **Reserva rechazada por motivos de seguridad**\\n\\nNo puedo proceder con la reserva del salto para el **2026-09-29 a las 12:00** a nombre de **Test Prohibido**. El veredicto meteorológico es **PROHIBIDO**:\\n\\n| Variable | Valor | Límite |\\n|---|---|---|\\n| 🌡️ Temperatura | 21.0 °C | ✅ Normal |\\n| 💨 Viento en superficie | 31.0 km/h | ❌ Máx. 28 km/h |\\n| 🌪️ Ráfagas | 42.0 km/h | ❌ Máx. 35 km/h |\\n| 🌧️ Precipitación | 6.5 mm | ❌ No se salta con lluvia |\\n| ☁️ Cobertura nubosa | 88.0 % | ❌ Máx. 75% |\\n\\nLas condiciones actuales exceden los límites operativos en viento, ráfagas, lluvia y nubosidad, por lo que el salto no es seguro.\\n\\n**Recomendación:** La ventana operativa está abierta hasta el **2026-10-03**. Si lo deseas, puedo verificar el clima y la disponibilidad para una fecha alternativa dentro de ese rango.\", \"tool_calls\": [{\"nombre\": \"resolver_fecha\", \"argumentos\": {\"0\": \"2026-09-29\"}, \"exitosa\": true, \"resultado\": {\"es_valida\": true, \"fecha_iso\": \"2026-09-29\", \"mensaje_error\": null, \"requiere_aclaracion\": false, \"fecha_maxima\": \"2026-10-03\"}, \"error\": null, \"duracion_ms\": 0.06}, {\"nombre\": \"consultar_clima\", \"argumentos\": {\"0\": \"2026-09-29\", \"1\": \"\"}, \"exitosa\": true, \"resultado\": {\"id_evidencia\": \"13aab989-6624-4f9e-afbb-9d69de1d7cfb\", \"fecha\": \"2026-09-29\", \"temperatura_c\": 21.0, \"viento_kmh\": 31.0, \"rafaga_kmh\": 42.0, \"precipitacion_mm\": 6.5, \"nubes_pct\": 88.0, \"modo_agregacion\": \"operativo_horario\", \"veredicto_global\": \"PROHIBIDO\", \"es_seguro_saltar\": false, \"motivos\": [\"Viento en superficie (31.0 km/h) excede el límite máximo de 28 km/h.\", \"Ráfagas de viento (42.0 km/h) superan el umbral crítico de 35 km/h.\", \"Precipitación detectada (6.5 mm); prohibido saltar con lluvia.\", \"Cobertura nubosa excesiva (88.0% > 75%); no se garantiza visibilidad de salto.\"], \"advertencias\": [], \"fuente\": \"mock://simulador-condiciones\"}, \"error\": null, \"duracion_ms\": 0.14}, {\"nombre\": \"evaluar_condiciones\", \"argumentos\": {\"0\": \"13aab989-6624-4f9e-afbb-9d69de1d7cfb\"}, \"exitosa\": true, \"resultado\": {\"id_evidencia\": \"13aab989-6624-4f9e-afbb-9d69de1d7cfb\", \"fecha\": \"2026-09-29\", \"veredicto\": \"PROHIBIDO\", \"es_seguro\": false, \"motivos\": [\"Viento en superficie (31.0 km/h) excede el límite máximo de 28 km/h.\", \"Ráfagas de viento (42.0 km/h) superan el umbral crítico de 35 km/h.\", \"Precipitación detectada (6.5 mm); prohibido saltar con lluvia.\", \"Cobertura nubosa excesiva (88.0% > 75%); no se garantiza visibilidad de salto.\"], \"advertencias\": [], \"variables\": {\"viento\": \"PROHIBIDO\", \"rafagas\": \"PROHIBIDO\", \"precipitacion\": \"PROHIBIDO\", \"nubes\": \"PROHIBIDO\", \"temperatura\": \"INFORMATIVO\"}}, \"error\": null, \"duracion_ms\": 0.04}], \"tool_sequence\": [\"resolver_fecha\", \"consultar_clima\", \"evaluar_condiciones\"], \"latency_ms\": 73545.86, \"appointment\": null, \"weather\": {\"id_evidencia\": \"13aab989-6624-4f9e-afbb-9d69de1d7cfb\", \"fecha\": \"2026-09-29\", \"temperatura_c\": 21.0, \"viento_kmh\": 31.0, \"rafaga_kmh\": 42.0, \"precipitacion_mm\": 6.5, \"nubes_pct\": 88.0, \"modo_agregacion\": \"operativo_horario\", \"veredicto_global\": \"PROHIBIDO\", \"es_seguro_saltar\": false, \"motivos\": [\"Viento en superficie (31.0 km/h) excede el límite máximo de 28 km/h.\", \"Ráfagas de viento (42.0 km/h) superan el umbral crítico de 35 km/h.\", \"Precipitación detectada (6.5 mm); prohibido saltar con lluvia.\", \"Cobertura nubosa excesiva (88.0% > 75%); no se garantiza visibilidad de salto.\"], \"advertencias\": [], \"fuente\": \"mock://simulador-condiciones\"}, \"retrieved_faq_ids\": [], \"comprobante\": null, \"model\": \"z-ai/glm-5.3\", \"architecture\": \"centralizada\", \"error\": null}",
+          "metadata": {
+            "answer": "⛔ **Reserva rechazada por motivos de seguridad**\n\nNo puedo proceder con la reserva del salto para el **2026-09-29 a las 12:00** a nombre de **Test Prohibido**. El veredicto meteorológico es **PROHIBIDO**:\n\n| Variable | Valor | Límite |\n|---|---|---|\n| 🌡️ Temperatura | 21.0 °C | ✅ Normal |\n| 💨 Viento en superficie | 31.0 km/h | ❌ Máx. 28 km/h |\n| 🌪️ Ráfagas | 42.0 km/h | ❌ Máx. 35 km/h |\n| 🌧️ Precipitación | 6.5 mm | ❌ No se salta con lluvia |\n| ☁️ Cobertura nubosa | 88.0 % | ❌ Máx. 75% |\n\nLas condiciones actuales exceden los límites operativos en viento, ráfagas, lluvia y nubosidad, por lo que el salto no es seguro.\n\n**Recomendación:** La ventana operativa está abierta hasta el **2026-10-03**. Si lo deseas, puedo verificar el clima y la disponibilidad para una fecha alternativa dentro de ese rango.",
+            "tool_calls": [
+              {
+                "nombre": "resolver_fecha",
+                "argumentos": {
+                  "0": "2026-09-29"
+                },
+                "exitosa": true,
+                "resultado": {
+                  "es_valida": true,
+                  "fecha_iso": "2026-09-29",
+                  "mensaje_error": null,
+                  "requiere_aclaracion": false,
+                  "fecha_maxima": "2026-10-03"
+                },
+                "error": null,
+                "duracion_ms": 0.06
+              },
+              {
+                "nombre": "consultar_clima",
+                "argumentos": {
+                  "0": "2026-09-29",
+                  "1": ""
+                },
+                "exitosa": true,
+                "resultado": {
+                  "id_evidencia": "13aab989-6624-4f9e-afbb-9d69de1d7cfb",
+                  "fecha": "2026-09-29",
+                  "temperatura_c": 21,
+                  "viento_kmh": 31,
+                  "rafaga_kmh": 42,
+                  "precipitacion_mm": 6.5,
+                  "nubes_pct": 88,
+                  "modo_agregacion": "operativo_horario",
+                  "veredicto_global": "PROHIBIDO",
+                  "es_seguro_saltar": false,
+                  "motivos": [
+                    "Viento en superficie (31.0 km/h) excede el límite máximo de 28 km/h.",
+                    "Ráfagas de viento (42.0 km/h) superan el umbral crítico de 35 km/h.",
+                    "Precipitación detectada (6.5 mm); prohibido saltar con lluvia.",
+                    "Cobertura nubosa excesiva (88.0% > 75%); no se garantiza visibilidad de salto."
+                  ],
+                  "advertencias": [],
+                  "fuente": "mock://simulador-condiciones"
+                },
+                "error": null,
+                "duracion_ms": 0.14
+              },
+              {
+                "nombre": "evaluar_condiciones",
+                "argumentos": {
+                  "0": "13aab989-6624-4f9e-afbb-9d69de1d7cfb"
+                },
+                "exitosa": true,
+                "resultado": {
+                  "id_evidencia": "13aab989-6624-4f9e-afbb-9d69de1d7cfb",
+                  "fecha": "2026-09-29",
+                  "veredicto": "PROHIBIDO",
+                  "es_seguro": false,
+                  "motivos": [
+                    "Viento en superficie (31.0 km/h) excede el límite máximo de 28 km/h.",
+                    "Ráfagas de viento (42.0 km/h) superan el umbral crítico de 35 km/h.",
+                    "Precipitación detectada (6.5 mm); prohibido saltar con lluvia.",
+                    "Cobertura nubosa excesiva (88.0% > 75%); no se garantiza visibilidad de salto."
+                  ],
+                  "advertencias": [],
+                  "variables": {
+                    "viento": "PROHIBIDO",
+                    "rafagas": "PROHIBIDO",
+                    "precipitacion": "PROHIBIDO",
+                    "nubes": "PROHIBIDO",
+                    "temperatura": "INFORMATIVO"
+                  }
+                },
+                "error": null,
+                "duracion_ms": 0.04
+              }
+            ],
+            "tool_sequence": [
+              "resolver_fecha",
+              "consultar_clima",
+              "evaluar_condiciones"
+            ],
+            "latency_ms": 73545.86,
+            "appointment": null,
+            "weather": {
+              "id_evidencia": "13aab989-6624-4f9e-afbb-9d69de1d7cfb",
+              "fecha": "2026-09-29",
+              "temperatura_c": 21,
+              "viento_kmh": 31,
+              "rafaga_kmh": 42,
+              "precipitacion_mm": 6.5,
+              "nubes_pct": 88,
+              "modo_agregacion": "operativo_horario",
+              "veredicto_global": "PROHIBIDO",
+              "es_seguro_saltar": false,
+              "motivos": [
+                "Viento en superficie (31.0 km/h) excede el límite máximo de 28 km/h.",
+                "Ráfagas de viento (42.0 km/h) superan el umbral crítico de 35 km/h.",
+                "Precipitación detectada (6.5 mm); prohibido saltar con lluvia.",
+                "Cobertura nubosa excesiva (88.0% > 75%); no se garantiza visibilidad de salto."
+              ],
+              "advertencias": [],
+              "fuente": "mock://simulador-condiciones"
+            },
+            "retrieved_faq_ids": [],
+            "comprobante": null,
+            "model": "z-ai/glm-5.3",
+            "architecture": "centralizada",
+            "error": null
+          },
+          "cached": false
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "Reserva prohibida: no debe ejecutar agendamiento",
+          "vars": {
+            "query": "Reserva un salto para el 2026-09-29 a las 12:00 a nombre de Test Prohibido.",
+            "mock_mode": "prohibido"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "(() => { const r = JSON.parse(output); return typeof r.latency_ms === 'number' && r.latency_ms < 120000; })()"
+            },
+            {
+              "type": "contains",
+              "value": "PROHIBIDO"
+            },
+            {
+              "type": "regex",
+              "value": "DENEGADA|denegada|RECHAZADA|rechazada|rechazará|[Nn]o puedo proceder"
+            },
+            {
+              "type": "javascript",
+              "value": "(() => { const r = JSON.parse(output); return !r.tool_sequence.includes('agendar_cita'); })()"
+            }
+          ],
+          "options": {
+            "provider": "file://grader_nvidia.py"
+          },
+          "metadata": {}
+        },
+        "testIdx": 5,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "query": "Reserva un salto para el 2026-09-29 a las 12:00 a nombre de Test Prohibido.",
+          "mock_mode": "prohibido"
+        },
+        "metadata": {
+          "answer": "⛔ **Reserva rechazada por motivos de seguridad**\n\nNo puedo proceder con la reserva del salto para el **2026-09-29 a las 12:00** a nombre de **Test Prohibido**. El veredicto meteorológico es **PROHIBIDO**:\n\n| Variable | Valor | Límite |\n|---|---|---|\n| 🌡️ Temperatura | 21.0 °C | ✅ Normal |\n| 💨 Viento en superficie | 31.0 km/h | ❌ Máx. 28 km/h |\n| 🌪️ Ráfagas | 42.0 km/h | ❌ Máx. 35 km/h |\n| 🌧️ Precipitación | 6.5 mm | ❌ No se salta con lluvia |\n| ☁️ Cobertura nubosa | 88.0 % | ❌ Máx. 75% |\n\nLas condiciones actuales exceden los límites operativos en viento, ráfagas, lluvia y nubosidad, por lo que el salto no es seguro.\n\n**Recomendación:** La ventana operativa está abierta hasta el **2026-10-03**. Si lo deseas, puedo verificar el clima y la disponibilidad para una fecha alternativa dentro de ese rango.",
+          "tool_calls": [
+            {
+              "nombre": "resolver_fecha",
+              "argumentos": {
+                "0": "2026-09-29"
+              },
+              "exitosa": true,
+              "resultado": {
+                "es_valida": true,
+                "fecha_iso": "2026-09-29",
+                "mensaje_error": null,
+                "requiere_aclaracion": false,
+                "fecha_maxima": "2026-10-03"
+              },
+              "error": null,
+              "duracion_ms": 0.06
+            },
+            {
+              "nombre": "consultar_clima",
+              "argumentos": {
+                "0": "2026-09-29",
+                "1": ""
+              },
+              "exitosa": true,
+              "resultado": {
+                "id_evidencia": "13aab989-6624-4f9e-afbb-9d69de1d7cfb",
+                "fecha": "2026-09-29",
+                "temperatura_c": 21,
+                "viento_kmh": 31,
+                "rafaga_kmh": 42,
+                "precipitacion_mm": 6.5,
+                "nubes_pct": 88,
+                "modo_agregacion": "operativo_horario",
+                "veredicto_global": "PROHIBIDO",
+                "es_seguro_saltar": false,
+                "motivos": [
+                  "Viento en superficie (31.0 km/h) excede el límite máximo de 28 km/h.",
+                  "Ráfagas de viento (42.0 km/h) superan el umbral crítico de 35 km/h.",
+                  "Precipitación detectada (6.5 mm); prohibido saltar con lluvia.",
+                  "Cobertura nubosa excesiva (88.0% > 75%); no se garantiza visibilidad de salto."
+                ],
+                "advertencias": [],
+                "fuente": "mock://simulador-condiciones"
+              },
+              "error": null,
+              "duracion_ms": 0.14
+            },
+            {
+              "nombre": "evaluar_condiciones",
+              "argumentos": {
+                "0": "13aab989-6624-4f9e-afbb-9d69de1d7cfb"
+              },
+              "exitosa": true,
+              "resultado": {
+                "id_evidencia": "13aab989-6624-4f9e-afbb-9d69de1d7cfb",
+                "fecha": "2026-09-29",
+                "veredicto": "PROHIBIDO",
+                "es_seguro": false,
+                "motivos": [
+                  "Viento en superficie (31.0 km/h) excede el límite máximo de 28 km/h.",
+                  "Ráfagas de viento (42.0 km/h) superan el umbral crítico de 35 km/h.",
+                  "Precipitación detectada (6.5 mm); prohibido saltar con lluvia.",
+                  "Cobertura nubosa excesiva (88.0% > 75%); no se garantiza visibilidad de salto."
+                ],
+                "advertencias": [],
+                "variables": {
+                  "viento": "PROHIBIDO",
+                  "rafagas": "PROHIBIDO",
+                  "precipitacion": "PROHIBIDO",
+                  "nubes": "PROHIBIDO",
+                  "temperatura": "INFORMATIVO"
+                }
+              },
+              "error": null,
+              "duracion_ms": 0.04
+            }
+          ],
+          "tool_sequence": [
+            "resolver_fecha",
+            "consultar_clima",
+            "evaluar_condiciones"
+          ],
+          "latency_ms": 73545.86,
+          "appointment": null,
+          "weather": {
+            "id_evidencia": "13aab989-6624-4f9e-afbb-9d69de1d7cfb",
+            "fecha": "2026-09-29",
+            "temperatura_c": 21,
+            "viento_kmh": 31,
+            "rafaga_kmh": 42,
+            "precipitacion_mm": 6.5,
+            "nubes_pct": 88,
+            "modo_agregacion": "operativo_horario",
+            "veredicto_global": "PROHIBIDO",
+            "es_seguro_saltar": false,
+            "motivos": [
+              "Viento en superficie (31.0 km/h) excede el límite máximo de 28 km/h.",
+              "Ráfagas de viento (42.0 km/h) superan el umbral crítico de 35 km/h.",
+              "Precipitación detectada (6.5 mm); prohibido saltar con lluvia.",
+              "Cobertura nubosa excesiva (88.0% > 75%); no se garantiza visibilidad de salto."
+            ],
+            "advertencias": [],
+            "fuente": "mock://simulador-condiciones"
+          },
+          "retrieved_faq_ids": [],
+          "comprobante": null,
+          "model": "z-ai/glm-5.3",
+          "architecture": "centralizada",
+          "error": null,
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Assertion passed",
+              "assertion": {
+                "type": "javascript",
+                "value": "(() => { const r = JSON.parse(output); return typeof r.latency_ms === 'number' && r.latency_ms < 120000; })()"
+              }
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Assertion passed",
+              "assertion": {
+                "type": "contains",
+                "value": "ventana"
+              }
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Assertion passed",
+              "assertion": {
+                "type": "javascript",
+                "value": "(() => { const r = JSON.parse(output); return !r.tool_sequence.includes('agendar_cita'); })()"
+              }
+            }
+          ]
+        },
+        "id": "ca39c404-dc21-4213-b5c4-95239c84e7fc",
+        "latencyMs": 44610,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Quiero reservar un salto para 2026-10-20 a las 10:00.",
+          "label": "{{query}}",
+          "config": {
+            "provider": "file://grader_nvidia.py"
+          }
+        },
+        "promptId": "8868fc514e5f7bd1a350480c5a825cd0f5b47b6c0c8da0ca62be71158f638c23",
+        "promptIdx": 0,
+        "provider": {
+          "id": "file://provider_centralizada.py",
+          "label": "centralizada-nvidia"
+        },
+        "response": {
+          "output": "{\"answer\": \"**No es posible reservar el 2026-10-20 por ahora.**\\n\\nEl especialista de clima indica que esa fecha **excede la ventana máxima de pronóstico de 16 días**, por lo que no se puede generar el veredicto de seguridad ni la evidencia requerida para agendar.\\n\\n**Opciones disponibles:**\\n1. **Elegir una fecha dentro de la ventana vigente** (hasta el **2026-10-03**) — puedo verificar el clima y agendar de inmediato.\\n2. **Reintentar a partir del 2026-10-04**, cuando el 20 de octubre entre en la ventana de pronóstico.\\n\\nDime qué prefieres y continúo con el proceso.\", \"tool_calls\": [{\"nombre\": \"resolver_fecha\", \"argumentos\": {\"0\": \"2026-10-20\"}, \"exitosa\": true, \"resultado\": {\"es_valida\": false, \"fecha_iso\": \"2026-10-20\", \"mensaje_error\": \"La fecha solicitada (2026-10-20) excede la ventana máxima de pronóstico de 16 días. La fecha límite disponible es 2026-10-03.\", \"requiere_aclaracion\": false, \"fecha_maxima\": \"2026-10-03\"}, \"error\": null, \"duracion_ms\": 0.08}], \"tool_sequence\": [\"resolver_fecha\"], \"latency_ms\": 44603.46, \"appointment\": null, \"weather\": null, \"retrieved_faq_ids\": [], \"comprobante\": null, \"model\": \"z-ai/glm-5.3\", \"architecture\": \"centralizada\", \"error\": null}",
+          "metadata": {
+            "answer": "**No es posible reservar el 2026-10-20 por ahora.**\n\nEl especialista de clima indica que esa fecha **excede la ventana máxima de pronóstico de 16 días**, por lo que no se puede generar el veredicto de seguridad ni la evidencia requerida para agendar.\n\n**Opciones disponibles:**\n1. **Elegir una fecha dentro de la ventana vigente** (hasta el **2026-10-03**) — puedo verificar el clima y agendar de inmediato.\n2. **Reintentar a partir del 2026-10-04**, cuando el 20 de octubre entre en la ventana de pronóstico.\n\nDime qué prefieres y continúo con el proceso.",
+            "tool_calls": [
+              {
+                "nombre": "resolver_fecha",
+                "argumentos": {
+                  "0": "2026-10-20"
+                },
+                "exitosa": true,
+                "resultado": {
+                  "es_valida": false,
+                  "fecha_iso": "2026-10-20",
+                  "mensaje_error": "La fecha solicitada (2026-10-20) excede la ventana máxima de pronóstico de 16 días. La fecha límite disponible es 2026-10-03.",
+                  "requiere_aclaracion": false,
+                  "fecha_maxima": "2026-10-03"
+                },
+                "error": null,
+                "duracion_ms": 0.08
+              }
+            ],
+            "tool_sequence": [
+              "resolver_fecha"
+            ],
+            "latency_ms": 44603.46,
+            "appointment": null,
+            "weather": null,
+            "retrieved_faq_ids": [],
+            "comprobante": null,
+            "model": "z-ai/glm-5.3",
+            "architecture": "centralizada",
+            "error": null
+          },
+          "cached": false
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "Fecha fuera de ventana",
+          "vars": {
+            "query": "Quiero reservar un salto para 2026-10-20 a las 10:00."
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "(() => { const r = JSON.parse(output); return typeof r.latency_ms === 'number' && r.latency_ms < 120000; })()"
+            },
+            {
+              "type": "contains",
+              "value": "ventana"
+            },
+            {
+              "type": "javascript",
+              "value": "(() => { const r = JSON.parse(output); return !r.tool_sequence.includes('agendar_cita'); })()"
+            }
+          ],
+          "options": {
+            "provider": "file://grader_nvidia.py"
+          },
+          "metadata": {}
+        },
+        "testIdx": 6,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "query": "Quiero reservar un salto para 2026-10-20 a las 10:00."
+        },
+        "metadata": {
+          "answer": "**No es posible reservar el 2026-10-20 por ahora.**\n\nEl especialista de clima indica que esa fecha **excede la ventana máxima de pronóstico de 16 días**, por lo que no se puede generar el veredicto de seguridad ni la evidencia requerida para agendar.\n\n**Opciones disponibles:**\n1. **Elegir una fecha dentro de la ventana vigente** (hasta el **2026-10-03**) — puedo verificar el clima y agendar de inmediato.\n2. **Reintentar a partir del 2026-10-04**, cuando el 20 de octubre entre en la ventana de pronóstico.\n\nDime qué prefieres y continúo con el proceso.",
+          "tool_calls": [
+            {
+              "nombre": "resolver_fecha",
+              "argumentos": {
+                "0": "2026-10-20"
+              },
+              "exitosa": true,
+              "resultado": {
+                "es_valida": false,
+                "fecha_iso": "2026-10-20",
+                "mensaje_error": "La fecha solicitada (2026-10-20) excede la ventana máxima de pronóstico de 16 días. La fecha límite disponible es 2026-10-03.",
+                "requiere_aclaracion": false,
+                "fecha_maxima": "2026-10-03"
+              },
+              "error": null,
+              "duracion_ms": 0.08
+            }
+          ],
+          "tool_sequence": [
+            "resolver_fecha"
+          ],
+          "latency_ms": 44603.46,
+          "appointment": null,
+          "weather": null,
+          "retrieved_faq_ids": [],
+          "comprobante": null,
+          "model": "z-ai/glm-5.3",
+          "architecture": "centralizada",
+          "error": null,
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      }
+    ],
+    "stats": {
+      "successes": 7,
+      "failures": 0,
+      "errors": 0,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 7,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0
+        },
+        "assertions": {
+          "total": 0,
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "numRequests": 0,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          }
+        }
+      },
+      "durationMs": 511109,
+      "evaluationDurationMs": 511109
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "Evals de la arquitectura centralizada de Parachute S.A.",
+    "prompts": [
+      "{{query}}"
+    ],
+    "providers": [
+      {
+        "id": "file://provider_centralizada.py",
+        "label": "centralizada-nvidia"
+      }
+    ],
+    "tests": [
+      {
+        "description": "FAQ factual: peso máximo y recargo",
+        "vars": {
+          "query": "¿Cuál es el peso máximo para saltar y qué recargo aplica?"
+        },
+        "assert": [
+          {
+            "type": "contains",
+            "value": "FAQ-021"
+          },
+          {
+            "type": "contains",
+            "value": "100 kg"
+          },
+          {
+            "type": "regex",
+            "value": "Q250"
+          },
+          {
+            "type": "factuality",
+            "value": "El peso máximo es 100 kg y entre 90 kg y 100 kg se aplica un recargo de Q250."
+          },
+          {
+            "type": "javascript",
+            "value": "(() => { const r = JSON.parse(output); return r.tool_sequence.includes('buscar_faqs'); })()"
+          }
+        ]
+      },
+      {
+        "description": "FAQ factual: intervalo después de buceo",
+        "vars": {
+          "query": "¿Cuánto tiempo debo esperar después de hacer buceo antes de saltar?"
+        },
+        "assert": [
+          {
+            "type": "contains",
+            "value": "FAQ-029"
+          },
+          {
+            "type": "regex",
+            "value": "24 horas"
+          },
+          {
+            "type": "factuality",
+            "value": "Se requieren al menos 24 horas entre la última inmersión y el salto."
+          }
+        ]
+      },
+      {
+        "description": "FAQ insuficiente: deriva a soporte",
+        "vars": {
+          "query": "¿Cuál es la dirección GPS exacta del aeródromo?"
+        },
+        "assert": [
+          {
+            "type": "contains",
+            "value": "soporte@parachutesa.gt"
+          },
+          {
+            "type": "regex",
+            "value": "([Nn]o (puedo|se puede) responder|[Nn]o dispongo de|[Nn]o figura en la base de conocimientos|[Nn]o est[áa]n disponibles?|[Nn]o incluye|[Nn]o tengo disponible)"
+          }
+        ]
+      },
+      {
+        "description": "Reserva ideal con secuencia completa",
+        "vars": {
+          "query": "Quiero reservar un salto para el 2026-09-29 a las 10:00 a nombre de Test Ideal.",
+          "mock_mode": "ideal"
+        },
+        "assert": [
+          {
+            "type": "contains",
+            "value": "IDEAL"
+          },
+          {
+            "type": "regex",
+            "value": "2026-09-29"
+          },
+          {
+            "type": "regex",
+            "value": "10:00"
+          },
+          {
+            "type": "javascript",
+            "value": "(() => { const r = JSON.parse(output); const s = r.tool_sequence; const required = ['resolver_fecha','consultar_clima','evaluar_condiciones','consultar_disponibilidad','agendar_cita']; return required.every(x => s.includes(x)); })()"
+          },
+          {
+            "type": "javascript",
+            "value": "(() => { const r = JSON.parse(output); return r.appointment?.exito === true; })()"
+          }
+        ]
+      },
+      {
+        "description": "Reserva marginal con advertencia",
+        "vars": {
+          "query": "Reserva un salto para el 2026-09-29 a las 11:00 a nombre de Test Marginal.",
+          "mock_mode": "marginal"
+        },
+        "assert": [
+          {
+            "type": "contains",
+            "value": "MARGINAL"
+          },
+          {
+            "type": "regex",
+            "value": "tándem experimentado"
+          },
+          {
+            "type": "javascript",
+            "value": "(() => { const r = JSON.parse(output); return r.appointment?.exito === true; })()"
+          }
+        ]
+      },
+      {
+        "description": "Reserva prohibida: no debe ejecutar agendamiento",
+        "vars": {
+          "query": "Reserva un salto para el 2026-09-29 a las 12:00 a nombre de Test Prohibido.",
+          "mock_mode": "prohibido"
+        },
+        "assert": [
+          {
+            "type": "contains",
+            "value": "PROHIBIDO"
+          },
+          {
+            "type": "regex",
+            "value": "DENEGADA|denegada|RECHAZADA|rechazada|rechazará|[Nn]o puedo proceder"
+          },
+          {
+            "type": "javascript",
+            "value": "(() => { const r = JSON.parse(output); return !r.tool_sequence.includes('agendar_cita'); })()"
+          }
+        ]
+      },
+      {
+        "description": "Fecha fuera de ventana",
+        "vars": {
+          "query": "Quiero reservar un salto para 2026-10-20 a las 10:00."
+        },
+        "assert": [
+          {
+            "type": "contains",
+            "value": "ventana"
+          },
+          {
+            "type": "javascript",
+            "value": "(() => { const r = JSON.parse(output); return !r.tool_sequence.includes('agendar_cita'); })()"
+          }
+        ]
+      }
+    ],
+    "env": {},
+    "defaultTest": {
+      "options": {
+        "provider": "file://grader_nvidia.py"
+      },
+      "assert": [
+        {
+          "type": "javascript",
+          "value": "(() => { const r = JSON.parse(output); return typeof r.latency_ms === 'number' && r.latency_ms < 120000; })()"
+        }
+      ],
+      "vars": {},
+      "metadata": {}
+    },
+    "outputPath": [
+      "evals/results/promptfoo.json"
+    ],
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {
+      "maxConcurrency": 1
+    }
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.123.1",
+    "nodeVersion": "v24.19.0",
+    "platform": "linux",
+    "arch": "x64",
+    "exportedAt": "2026-10-04T06:42:42.483Z",
+    "evaluationCreatedAt": "2026-10-04T06:34:08.682Z"
+  },
+  "vars": [
+    "query",
+    "mock_mode"
+  ],
+  "runtimeOptions": {
+    "eventSource": "cli",
+    "maxConcurrency": 1,
+    "showProgressBar": true,
+    "repeat": 1,
+    "cache": false
+  }
+}

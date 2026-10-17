@@ -1,0 +1,12 @@
+{
+  "name": "parachute-evals",
+  "private": true,
+  "scripts": {
+    "eval": "bash evals/run_promptfoo.sh eval -c evals/promptfooconfig.yaml",
+    "eval:ci": "bash evals/run_promptfoo.sh eval -c evals/promptfooconfig.yaml --no-cache --output evals/results/promptfoo.json",
+    "eval:view": "bash evals/run_promptfoo.sh view -y evals/results/promptfoo.json"
+  },
+  "devDependencies": {
+    "promptfoo": "^0.123.1"
+  }
+}
