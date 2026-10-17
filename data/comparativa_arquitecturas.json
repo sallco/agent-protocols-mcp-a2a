@@ -1,0 +1,92 @@
+[
+  {
+    "escenario": "faq_institucional",
+    "arquitectura": "centralizada",
+    "latencia_segundos": 112.45,
+    "caracteres_respuesta": 348,
+    "agente_final": "orquestador_central",
+    "llamadas_llm_estimadas": 3,
+    "comprobante_generado": false,
+    "fragmento_respuesta": "El evento nacional de paracaidismo se llevará a cabo en Puerto San José, Escuintla. El límite de peso estándar para salto tándem es de 95 kg por motivos de seguridad operacional."
+  },
+  {
+    "escenario": "faq_institucional",
+    "arquitectura": "jerarquica",
+    "latencia_segundos": 307.62,
+    "caracteres_respuesta": 395,
+    "agente_final": "orquestador_raiz",
+    "llamadas_llm_estimadas": 5,
+    "comprobante_generado": false,
+    "fragmento_respuesta": "De acuerdo con el supervisor del dominio de conocimiento y las FAQs oficiales de Parachute S.A., el evento se realizará en Guatemala y se aplican restricciones estrictas de peso (95 kg)."
+  },
+  {
+    "escenario": "faq_institucional",
+    "arquitectura": "descentralizada",
+    "latencia_segundos": 204.71,
+    "caracteres_respuesta": 320,
+    "agente_final": "agente_faqs",
+    "llamadas_llm_estimadas": 2,
+    "comprobante_generado": false,
+    "fragmento_respuesta": "¡Hola! Como especialista en atención de Parachute S.A., te informo que el evento nacional 2026 se llevará a cabo en las fechas programadas con límite de peso de 95 kg para saltos tándem."
+  },
+  {
+    "escenario": "clima_seguridad",
+    "arquitectura": "centralizada",
+    "latencia_segundos": 134.18,
+    "caracteres_respuesta": 412,
+    "agente_final": "orquestador_central",
+    "llamadas_llm_estimadas": 4,
+    "comprobante_generado": false,
+    "fragmento_respuesta": "Para el 29 de septiembre de 2026, el especialista en clima reporta vientos de 18 km/h, ráfagas de 26 km/h, precipitación acumulada de 0 mm y nubosidad moderada. El veredicto de seguridad es IDEAL."
+  },
+  {
+    "escenario": "clima_seguridad",
+    "arquitectura": "jerarquica",
+    "latencia_segundos": 325.80,
+    "caracteres_respuesta": 460,
+    "agente_final": "orquestador_raiz",
+    "llamadas_llm_estimadas": 6,
+    "comprobante_generado": false,
+    "fragmento_respuesta": "El supervisor de operaciones coordinó la evaluación meteorológica y de seguridad de vuelo para el 29 de septiembre de 2026. Las condiciones evaluadas determinísticamente resultaron en veredicto IDEAL."
+  },
+  {
+    "escenario": "clima_seguridad",
+    "arquitectura": "descentralizada",
+    "latencia_segundos": 248.95,
+    "caracteres_respuesta": 380,
+    "agente_final": "agente_clima",
+    "llamadas_llm_estimadas": 4,
+    "comprobante_generado": false,
+    "fragmento_respuesta": "Soy el oficial meteorológico de Parachute S.A. He verificado el pronóstico oficial de Open-Meteo para el 29 de septiembre de 2026: condiciones favorables sin precipitaciones, veredicto técnico IDEAL."
+  },
+  {
+    "escenario": "flujo_combinado",
+    "arquitectura": "centralizada",
+    "latencia_segundos": 185.30,
+    "caracteres_respuesta": 510,
+    "agente_final": "orquestador_central",
+    "llamadas_llm_estimadas": 6,
+    "comprobante_generado": true,
+    "fragmento_respuesta": "He verificado que la edad mínima es 18 años y las condiciones climáticas para el 29 de septiembre son favorables. Tu cita ha sido agendada exitosamente a las 11:00 a nombre de Diego Calderón."
+  },
+  {
+    "escenario": "flujo_combinado",
+    "arquitectura": "jerarquica",
+    "latencia_segundos": 389.40,
+    "caracteres_respuesta": 545,
+    "agente_final": "orquestador_raiz",
+    "llamadas_llm_estimadas": 8,
+    "comprobante_generado": true,
+    "fragmento_respuesta": "Ambos supervisores completaron sus tareas: Conocimiento validó las políticas de edad y Operaciones ejecutó la secuencia clima -> evaluación -> agenda. La reserva para Diego Calderón quedó confirmada."
+  },
+  {
+    "escenario": "flujo_combinado",
+    "arquitectura": "descentralizada",
+    "latencia_segundos": 290.15,
+    "caracteres_respuesta": 440,
+    "agente_final": "agente_agenda",
+    "llamadas_llm_estimadas": 6,
+    "comprobante_generado": true,
+    "fragmento_respuesta": "Tras recibir la transferencia de control y verificar la evidencia meteorológica previa, he confirmado tu reserva para el 29 de septiembre a las 11:00. ¡Te esperamos en Parachute S.A.!"
+  }
+]
