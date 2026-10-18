@@ -3,14 +3,9 @@
 from __future__ import annotations
 
 import argparse
-import sys
+import importlib
+from datetime import date
 from typing import Sequence
-
-import arch_centralizada
-import arch_descentralizada
-import arch_jerarquica
-import load_faqs
-import smoke_test
 
 
 def parse_arguments(arguments: Sequence[str] | None = None) -> argparse.Namespace:
@@ -29,7 +24,9 @@ def parse_arguments(arguments: Sequence[str] | None = None) -> argparse.Namespac
     commands.add_parser("benchmark", help="Ejecuta la matriz comparativa de rendimiento entre las 3 arquitecturas.")
 
     # 4. Comando chat (conversación interactiva en terminal)
-    chat_parser = commands.add_parser("chat", help="Inicia el agente conversacional interactivo.")
+    chat_parser = commands.add_parser(
+        "chat-local", aliases=["chat"], help="Inicia el agente conversacional local."
+    )
 
     chat_parser.add_argument(
         "--arquitectura",
@@ -49,12 +46,19 @@ def parse_arguments(arguments: Sequence[str] | None = None) -> argparse.Namespac
         default=None,
         help="Modo de simulación meteorológica para pruebas y demostraciones reproducibles.",
     )
+    chat_parser.add_argument(
+        "--fecha-base", type=date.fromisoformat, default=None,
+        help="Fecha de referencia YYYY-MM-DD para una demostración con --mock-clima.",
+    )
 
     parsed_arguments, remaining_arguments = parser.parse_known_args(arguments)
     if parsed_arguments.command == "load":
         parsed_arguments.loader_arguments = remaining_arguments
     elif remaining_arguments:
         parser.error(f"Argumentos no reconocidos: {' '.join(remaining_arguments)}")
+    if parsed_arguments.command in {"chat", "chat-local"}:
+        if parsed_arguments.fecha_base is not None and parsed_arguments.mock_clima is None:
+            parser.error("--fecha-base requiere --mock-clima.")
 
     return parsed_arguments
 
@@ -63,21 +67,24 @@ def main(arguments: Sequence[str] | None = None) -> None:
     parsed_arguments = parse_arguments(arguments)
 
     if parsed_arguments.command == "load":
+        import load_faqs
         load_faqs.main(parsed_arguments.loader_arguments)
     elif parsed_arguments.command == "smoke-test":
+        import smoke_test
         smoke_test.main()
     elif parsed_arguments.command == "benchmark":
         import benchmark_arquitecturas
         benchmark_arquitecturas.main()
-    elif parsed_arguments.command == "chat":
+    elif parsed_arguments.command in {"chat", "chat-local"}:
+        from core.tools import configurar_herramientas
 
-        arq = parsed_arguments.arquitectura
-        if arq == "centralizada":
-            arch_centralizada.main()
-        elif arq == "jerarquica":
-            arch_jerarquica.main()
-        elif arq == "descentralizada":
-            arch_descentralizada.main()
+        configurar_herramientas(
+            mock_clima=parsed_arguments.mock_clima,
+            fecha_base=(parsed_arguments.fecha_base.isoformat()
+                        if parsed_arguments.fecha_base is not None else None),
+        )
+        architecture = importlib.import_module("arch_" + parsed_arguments.arquitectura)
+        architecture.main(model_name=parsed_arguments.modelo)
 
 
 if __name__ == "__main__":

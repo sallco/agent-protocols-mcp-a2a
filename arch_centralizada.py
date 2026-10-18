@@ -128,13 +128,13 @@ async def ejecutar_turno_centralizado(
 
 
 
-def main() -> None:
+def main(model_name: str | None = None) -> None:
     print("=========================================================")
     print(" Parachute S.A. - Chat Asistente (Arquitectura Centralizada)")
     print("=========================================================")
     print("Escribe 'salir' para terminar la conversación.\n")
 
-    orquestador = construir_agentes_centralizados()
+    orquestador = construir_agentes_centralizados(model_name)
 
     while True:
         try:

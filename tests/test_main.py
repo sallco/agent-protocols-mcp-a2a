@@ -1,0 +1,68 @@
+"""Opciones de ejecución local sin llamadas al proveedor ni a la base de datos."""
+
+import importlib
+import subprocess
+import sys
+from types import SimpleNamespace
+from unittest.mock import MagicMock
+
+import pytest
+
+import main
+from core import tools
+
+
+@pytest.mark.parametrize("arquitectura", ["centralizada", "jerarquica", "descentralizada"])
+def test_opciones_llegan_a_herramientas_y_arquitectura(monkeypatch, arquitectura):
+    chat = MagicMock()
+    configure = MagicMock()
+    monkeypatch.setitem(sys.modules, "arch_" + arquitectura, SimpleNamespace(main=chat))
+    monkeypatch.setattr(tools, "configurar_herramientas", configure)
+
+    main.main([
+        "chat-local", "--arquitectura", arquitectura, "--modelo", "modelo-prueba",
+        "--mock-clima", "prohibido", "--fecha-base", "2026-09-18",
+    ])
+
+    configure.assert_called_once_with(mock_clima="prohibido", fecha_base="2026-09-18")
+    chat.assert_called_once_with(model_name="modelo-prueba")
+
+
+@pytest.mark.parametrize("arquitectura,constructor", [
+    ("centralizada", "construir_agentes_centralizados"),
+    ("jerarquica", "construir_agentes_jerarquicos"),
+    ("descentralizada", "construir_red_descentralizada"),
+])
+def test_chat_local_construye_agentes_con_modelo_elegido(monkeypatch, arquitectura, constructor):
+    module = importlib.import_module("arch_" + arquitectura)
+    factory = MagicMock(return_value=(SimpleNamespace(name="FAQs"), None, None)
+                        if arquitectura == "descentralizada" else SimpleNamespace())
+    monkeypatch.setattr(module, constructor, factory)
+    monkeypatch.setattr("builtins.input", lambda _: "salir")
+
+    module.main(model_name="modelo-prueba")
+
+    factory.assert_called_once_with("modelo-prueba")
+
+
+@pytest.mark.parametrize("argumentos", [
+    ["chat-local", "--fecha-base", "2026-09-18"],
+    ["chat-local", "--mock-clima", "ideal", "--fecha-base", "2026-02-30"],
+    ["chat-local", "--mock-clima", "desconocido"],
+])
+def test_rechaza_configuracion_invalida(argumentos):
+    with pytest.raises(SystemExit) as error:
+        main.parse_arguments(argumentos)
+    assert error.value.code == 2
+
+
+def test_ayuda_no_importa_servicios_locales():
+    code = (
+        "import sys, main; "
+        "assert 'core.tools' not in sys.modules; "
+        "assert 'arch_centralizada' not in sys.modules; "
+        "main.parse_arguments(['--help'])"
+    )
+    result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+    assert "chat-local" in result.stdout

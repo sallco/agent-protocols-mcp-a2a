@@ -103,13 +103,13 @@ async def ejecutar_turno_descentralizado(
     return respuesta, nuevo_agente, comprobante
 
 
-def main() -> None:
+def main(model_name: str | None = None) -> None:
     print("==========================================================")
     print(" Parachute S.A. - Chat Asistente (Arquitectura Descentralizada)")
     print("==========================================================")
     print("Escribe 'salir' para terminar la conversación.\n")
 
-    agente_faqs, agente_clima, agente_agenda = construir_red_descentralizada()
+    agente_faqs, agente_clima, agente_agenda = construir_red_descentralizada(model_name)
     agente_activo = agente_faqs  # FAQ inicia por defecto
 
     while True:

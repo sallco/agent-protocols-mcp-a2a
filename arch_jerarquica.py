@@ -174,13 +174,13 @@ async def ejecutar_turno_jerarquico(
     return respuesta, comprobante
 
 
-def main() -> None:
+def main(model_name: str | None = None) -> None:
     print("=========================================================")
     print(" Parachute S.A. - Chat Asistente (Arquitectura Jerárquica)")
     print("=========================================================")
     print("Escribe 'salir' para terminar la conversación.\n")
 
-    orquestador = construir_agentes_jerarquicos()
+    orquestador = construir_agentes_jerarquicos(model_name)
 
     while True:
         try:

@@ -4,13 +4,14 @@ from __future__ import annotations
 
 import json
 from contextvars import ContextVar
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from functools import wraps
 from time import perf_counter
 from typing import Any
 
 from agents import function_tool
 
+from core.config import get_settings
 from core.dates import DateResolver
 from core.faq_store import FAQStore
 from core.safety import Veredicto
@@ -66,7 +67,23 @@ def obtener_traza_herramientas() -> list[dict[str, Any]]:
 
 
 def establecer_mock_clima(modo: str | None) -> None:
+    if modo not in {None, "ideal", "marginal", "prohibido"}:
+        raise ValueError("Modo de clima no válido: use ideal, marginal o prohibido.")
     _EVAL_MOCK_CLIMA.set(modo or None)
+
+
+def configurar_herramientas(
+    *, mock_clima: str | None = None, fecha_base: str | None = None
+) -> None:
+    """Configura el escenario al iniciar el proceso, antes de atender peticiones."""
+    global _scheduling_service, _date_resolver
+    if fecha_base is not None and mock_clima is None:
+        raise ValueError("Una fecha base fija requiere --mock-clima.")
+    settings = replace(get_settings(), base_date=fecha_base)
+    service = SchedulingService(settings)
+    establecer_mock_clima(mock_clima)
+    _scheduling_service = service
+    _date_resolver = service.date_resolver
 
 
 def _registrar_herramienta(
@@ -181,7 +198,7 @@ def fn_consultar_clima(fecha_iso: str, mock_mode: str = "") -> str:
         if not res_fecha.es_valida or not res_fecha.fecha_iso:
             return json.dumps({"error": res_fecha.mensaje_error or "Fecha fuera de ventana."}, ensure_ascii=False)
 
-        mock = mock_mode.strip() if mock_mode else _EVAL_MOCK_CLIMA.get()
+        mock = _EVAL_MOCK_CLIMA.get() or (mock_mode.strip() if mock_mode else None)
         evidencia = _weather_client.consultar(res_fecha.fecha_iso, mock_mode=mock)
         return json.dumps(
             {

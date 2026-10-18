@@ -178,15 +178,15 @@ Puedes iniciar una sesión interactiva en cualquiera de las tres arquitecturas:
 
 - **Arquitectura Centralizada (predeterminada)**:
   ```bash
-  uv run python main.py chat --arquitectura centralizada
+  uv run python main.py chat-local --arquitectura centralizada
   ```
 - **Arquitectura Jerárquica**:
   ```bash
-  uv run python main.py chat --arquitectura jerarquica
+  uv run python main.py chat-local --arquitectura jerarquica
   ```
 - **Arquitectura Descentralizada**:
   ```bash
-  uv run python main.py chat --arquitectura descentralizada
+  uv run python main.py chat-local --arquitectura descentralizada
   ```
 
 *Nota: También puedes ejecutar directamente `uv run python arch_centralizada.py`, `uv run python arch_jerarquica.py` o `uv run python arch_descentralizada.py`.*
@@ -200,11 +200,22 @@ evaluaciones históricas inyectan explícitamente el 18 de septiembre de 2026.
 Para probar determinísticamente los guardarraíles sin depender del clima real del día:
 ```bash
 # Simular condiciones óptimas (viento bajo, despejado, sin lluvia)
-uv run python main.py chat --arquitectura centralizada --mock-clima ideal
+uv run python main.py chat-local --arquitectura centralizada --mock-clima ideal
 
 # Simular condiciones de riesgo (lluvia o viento fuerte que veta la reserva)
-uv run python main.py chat --arquitectura centralizada --mock-clima prohibido
+uv run python main.py chat-local --arquitectura centralizada --mock-clima prohibido
 ```
+
+Para reproducir los ejemplos históricos del evento con clima simulado:
+
+```bash
+uv run python main.py chat-local --mock-clima ideal --fecha-base 2026-09-18
+```
+
+`--fecha-base` requiere `--mock-clima`. El escenario elegido por el operador
+prevalece sobre cualquier modo solicitado por el modelo. Puedes seleccionar el
+modelo con `--modelo`; la opción se aplica a cualquiera de las tres arquitecturas.
+`chat` se conserva temporalmente como alias local hasta incorporar el cliente A2A.
 
 #### 💬 Ejemplos de Preguntas y Flujos para Probar
 

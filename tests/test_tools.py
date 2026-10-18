@@ -16,6 +16,27 @@ from core.tools import (
     limpiar_ultimo_comprobante,
     obtener_ultimo_comprobante,
 )
+import core.tools as tools
+
+
+def test_escenario_del_operador_prevalece_sobre_argumentos_del_modelo(monkeypatch):
+    monkeypatch.setattr(tools, "_scheduling_service", tools._scheduling_service)
+    try:
+        tools.configurar_herramientas(mock_clima="prohibido", fecha_base="2026-09-18")
+        assert json.loads(fn_resolver_fecha("mañana"))["fecha_iso"] == "2026-09-19"
+        assert tools._scheduling_service.date_resolver.base_date.isoformat() == "2026-09-18"
+        clima = json.loads(fn_consultar_clima("2026-09-29", mock_mode="ideal"))
+        assert clima["veredicto_global"] == "PROHIBIDO"
+        assert clima["fuente"] == "mock://simulador-condiciones"
+    finally:
+        tools.establecer_mock_clima(None)
+
+
+def test_fecha_fija_sin_simulacion_no_modifica_servicios():
+    original = tools._scheduling_service
+    with pytest.raises(ValueError, match="requiere --mock-clima"):
+        tools.configurar_herramientas(fecha_base="2026-09-18")
+    assert tools._scheduling_service is original
 
 
 def test_herramientas_compartidas_registradas() -> None:
