@@ -29,6 +29,7 @@ def tabla_citas_prueba(monkeypatch):
     tools = sys.modules.get("core.tools")
     if tools is not None:
         service = tools._scheduling_service
+        monkeypatch.setattr(tools, "_scheduling_service", service)
         monkeypatch.setattr(
             service, "settings",
             replace(service.settings, citas_table=tabla, base_date="2026-09-18"),

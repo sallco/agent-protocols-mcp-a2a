@@ -453,5 +453,54 @@ PY
 ```
 
 Las pruebas de MCP levantan HTTP local real y verifican reservas en tablas
-aisladas, sin consumir el LLM. La integración del MAS y del chat con A2A se
-implementará en los siguientes hitos.
+aisladas, sin consumir el LLM. La exposición A2A y la conversión de la terminal
+en cliente A2A se implementarán en los siguientes hitos.
+
+## 8. MAS centralizado como cliente MCP
+
+`mas_mcp.py` conecta el orquestador y sus tres especialistas al servidor MCP.
+Reutiliza las instrucciones y delegaciones existentes; en modo remoto los
+especialistas no cargan las herramientas locales ni los servicios de PostgreSQL
+y embeddings. `chat-local` y las evaluaciones anteriores conservan su modo local.
+
+Una sola conexión MCP se comparte entre especialistas, con el catálogo filtrado
+por dominio según la tabla anterior. Estos filtros limitan lo que ve cada agente;
+el servidor MCP sigue publicando sus siete herramientas para sus clientes.
+
+Con el servidor MCP de demostración activo, puedes probar el MAS desde otra
+terminal. Este ejemplo **sí utiliza NVIDIA NIM** y requiere la clave del `.env`:
+
+```bash
+uv run python - <<'PY'
+import asyncio
+from mas_mcp import conectar_mas_mcp, ejecutar_turno_mcp
+
+async def main():
+    async with conectar_mas_mcp() as orquestador:
+        resultado, comprobante = await ejecutar_turno_mcp(
+            orquestador, "¿Es seguro saltar el 2026-09-29?"
+        )
+        print(resultado.final_output)
+        if comprobante:
+            print(comprobante)
+
+asyncio.run(main())
+PY
+```
+
+La conexión admite `mcp_url` y `model_name`. El cliente LLM y el cliente MCP se
+cierran al salir del bloque, también si ocurre un error; se reutilizan entre
+turnos mientras permanezca abierto. Las peticiones incluyen un UUID en
+`_meta.request_id`, compartido por las llamadas de un mismo turno.
+
+`ejecutar_turno_mcp` devuelve el resultado nativo de Agents y el comprobante exacto
+de la herramienta remota, recogido por un hook en el especialista de agenda.
+Cada turno tiene su propio contexto: el comprobante no se obtiene de una variable
+global del cliente ni del texto redactado por el modelo. Para continuar una
+conversación se puede pasar `resultado.to_input_list()` junto con el nuevo mensaje;
+la conservación del historial por conversación corresponderá al servidor A2A.
+
+Los fallos de transporte se propagan al consumidor y las llamadas MCP no se
+reintentan automáticamente, evitando repetir una reserva de resultado incierto.
+Las pruebas de integración usan Agents, delegaciones y HTTP MCP reales con el
+modelo simulado del SDK, además de tablas aisladas para las reservas.

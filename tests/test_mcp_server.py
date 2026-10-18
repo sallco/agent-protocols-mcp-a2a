@@ -4,7 +4,6 @@ import asyncio
 from contextlib import asynccontextmanager
 import json
 import logging
-import socket
 from uuid import uuid4
 from unittest.mock import MagicMock
 
@@ -12,43 +11,19 @@ from mcp import Client
 from mcp.types import RequestParamsMeta
 from mcp.shared.exceptions import MCPError
 import pytest
-import uvicorn
 
 from core import tools
 import mcp_server
 from mcp_server import crear_servidor_mcp
+from tests.http_server import servidor_http
 
 
 @asynccontextmanager
 async def cliente_http(server):
-    with socket.socket() as sock:
-        sock.bind(("127.0.0.1", 0))
-        sock.listen()
-        port = sock.getsockname()[1]
-        app = server.streamable_http_app(json_response=True, stateless_http=True)
-        http = uvicorn.Server(uvicorn.Config(app, log_level="warning", lifespan="on"))
-        task = asyncio.create_task(http.serve(sockets=[sock]))
-        try:
-            async with asyncio.timeout(10):
-                while not http.started:
-                    if task.done():
-                        await task
-                        raise RuntimeError("El servidor terminó antes de iniciar")
-                    await asyncio.sleep(0.01)
-            async with Client(f"http://127.0.0.1:{port}/mcp") as client:
-                yield client
-        finally:
-            http.should_exit = True
-            try:
-                await asyncio.wait_for(task, timeout=10)
-            finally:
-                if not task.done():
-                    task.cancel()
-
-
-@pytest.fixture(autouse=True)
-def restaurar_servicios(monkeypatch):
-    monkeypatch.setattr(tools, "_scheduling_service", tools._scheduling_service)
+    app = server.streamable_http_app(json_response=True, stateless_http=True)
+    async with servidor_http(app) as url:
+        async with Client(url + "/mcp") as client:
+            yield client
 
 
 def resultado_json(result):
