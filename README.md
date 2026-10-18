@@ -1,506 +1,137 @@
-# HDT5 & HDT6 — Orquestación Multiagente y Evaluación de Calidad (Evals) (Parachute S.A.)
 
-Sistema Multiagente (MAS) para atención al cliente, evaluación meteorológica y calendarización de saltos en paracaídas para el evento nacional Guatemala 2026.
 
-La nueva etapa de protocolos está definida en el [diseño acordado de MCP y A2A](docs/diseno_mcp_a2a.md), con arquitectura, interfaces, hitos y criterios de aceptación. Su implementación se revisará paso a paso.
 
-Este proyecto abarca dos etapas clave del ciclo de desarrollo de software e inteligencia artificial:
-1. **HDT5 — Orquestación Multiagente**: Implementación, benchmark y análisis comparativo de **tres arquitecturas de orquestación**:
-   - **Centralizada**: Un orquestador principal que delega en especialistas mediante `as_tool()`.
-   - **Jerárquica**: Un orquestador raíz que coordina supervisores de dominio (`Conocimiento` y `Operaciones`), los cuales a su vez coordinan agentes hoja.
-   - **Descentralizada**: Red de agentes pares que se transfieren el control entre sí mediante `handoff()`, preservando contexto sin un coordinador central.
-2. **HDT6 — Evaluación de Calidad con Evals (Promptfoo)**: Marco integral de evaluación automatizada para la puesta en productivo del agente sobre la arquitectura seleccionada (**Centralizada**), validando factualidad RAG, reglas deterministas, latencia y ejecución segura de herramientas.
 
-> 📄 **Informe técnico completo de HDT5 (PDF):** [`docs/Hoja de trabajo 5 - Orquestación.pdf`](docs/Hoja%20de%20trabajo%205%20-%20Orquestaci%C3%B3n.pdf) *(análisis comparativo, métricas y respuestas a preguntas de diseño)*. Ver [previsualización abajo](#6-documentación-e-informe-técnico).
-> 📊 **Reporte de evaluación de HDT6 (Promptfoo):** [`evals/results/promptfoo.json`](evals/results/promptfoo.json) *(100% de tests aprobados)*. Ver [sección de evals abajo](#5-hoja-de-trabajo-6--evals-con-promptfoo-puesta-en-producción).
+# Parachute S.A. — MCP y A2A
 
----
+Sistema multiagente para consultas institucionales, evaluación meteorológica y reservas de paracaidismo. Integra un servidor MCP de herramientas, un agente público A2A y un cliente de terminal.
 
-## 1. Arquitecturas de Orquestación
-
-### Arquitectura 1: Centralizada (`arch_centralizada.py`)
-
-Un único agente orquestador atiende al usuario y coordina a los especialistas como herramientas (`as_tool()`). El control siempre retorna al centro antes de emitir una respuesta consolidada.
+## Arquitectura
 
 ```mermaid
-graph TD
-    U["Usuario"] <--> O["Orquestador Central<br/>(Único punto de contacto)"]
-
-    O -->|as_tool: consultar_faqs| A1["Especialista FAQs<br/>(Conocimiento institucional)"]
-    O -->|as_tool: consultar_clima_seguridad| A2["Especialista Clima/Seguridad<br/>(Pronóstico y Veredicto)"]
-    O -->|as_tool: gestionar_agenda| A3["Especialista Agenda<br/>(Cupos y Citas)"]
-
-    A1 --> T1[("PostgreSQL + pgvector<br/>120 FAQs / HNSW")]
-    A2 --> T2["API Open-Meteo<br/>(Ventana 08-16h)"]
-    A2 --> T3["core/safety.py<br/>(Reglas deterministas)"]
-    A3 --> T4[("PostgreSQL: citas<br/>(Restricción única fecha/hora)")]
+flowchart LR
+    T[Cliente de terminal] -->|A2A: HTTP/JSON-RPC| A[Servidor A2A: MAS centralizado]
+    A -->|Inferencia| N[NVIDIA NIM]
+    A -->|MCP: Streamable HTTP| M[Servidor MCP]
+    T -->|Recursos MCP sin LLM| M
+    M --> D[(PostgreSQL y pgvector)]
+    M --> W[Open-Meteo o clima simulado]
+    M --> R[Corpus de FAQs]
 ```
 
-### Arquitectura 2: Jerárquica (`arch_jerarquica.py`)
+El servidor A2A expone un único agente con tres skills: preguntas frecuentes, clima y seguridad, y gestión de reservas. El MAS utiliza un orquestador central que delega mediante `as_tool()` en tres especialistas; cada uno accede únicamente a las herramientas MCP de su dominio.
 
-Estructura de dos niveles de decisión: el Orquestador Raíz delega en un **Supervisor de Conocimiento** (FAQs y políticas) y un **Supervisor de Operaciones**, quien impone la secuencia obligatoria: `clima -> evaluación de seguridad -> agenda`.
-
-```mermaid
-graph TD
-    U["Usuario"] <--> R["Orquestador Raíz<br/>(Dirección y Síntesis)"]
-
-    R -->|as_tool| S1["Supervisor de Conocimiento<br/>(FAQs y Políticas)"]
-    R -->|as_tool| S2["Supervisor de Operaciones<br/>(Impositor de secuencia técnica)"]
-
-    S1 -->|as_tool| H1["Agente FAQs Hoja"]
-    S1 -->|as_tool| H2["Agente Políticas Hoja"]
-
-    S2 -->|as_tool: 1. Clima| H3["Agente Clima Hoja"]
-    S2 -->|as_tool: 2. Veredicto| H4["Agente Evaluación Hoja"]
-    S2 -->|as_tool: 3. Reserva| H5["Agente Agenda Hoja"]
-
-    H1 --> T1[("PostgreSQL + pgvector<br/>faqs")]
-    H3 --> T2["API Open-Meteo<br/>(08-16h)"]
-    H4 --> T3["core/safety.py<br/>(Veredicto Python)"]
-    H5 --> T4[("PostgreSQL: citas<br/>(Transaccional)")]
-```
-
-### Arquitectura 3: Descentralizada (`arch_descentralizada.py`)
-
-Red de pares autónomos sin coordinador permanente. La atención inicia en `agente_faqs` y el control se transfiere dinámicamente mediante `handoff()` según el dominio requerido.
-
-```mermaid
-graph LR
-    U["Usuario"] <--> F["Agente FAQs<br/>(Receptor inicial)"]
-
-    F <-->|handoff: clima / viabilidad| C["Agente Clima / Seguridad"]
-    C <-->|handoff: reservar con evidencia| A["Agente Agenda / Citas"]
-    A <-->|handoff: dudas institucionales| F
-    A <-->|handoff: falta evidencia clima| C
-
-    F --> T1[("PostgreSQL + pgvector<br/>faqs")]
-    C --> T2["API Open-Meteo + safety.py"]
-    A --> T3[("PostgreSQL: citas<br/>(Guardarraíl determinista)")]
-```
-
----
-
-## 2. Decisiones Técnicas y Guardarraíles Críticos
-
-1. **Evaluación de Seguridad Determinista en Python Puro (`core/safety.py`)**:
-   - El LLM **nunca** calcula ni relaja umbrales de seguridad.
-   - Viento: `< 20 km/h` (IDEAL), `20–28 km/h` (MARGINAL: solo tándem experimentado), `> 28 km/h` (PROHIBIDO).
-   - Ráfagas: `> 35 km/h` (PROHIBIDO).
-   - Precipitación: `> 0.0 mm` (PROHIBIDO).
-   - Nubes: `< 30%` (IDEAL), `30–75%` (MARGINAL), `> 75%` (PROHIBIDO).
-   - Temperatura: Informativa, sin veto.
-   - Veredicto global: El **peor** de los estados individuales.
-
-2. **Ventana Operativa de Salto (08:00–16:00) vs Agregación Diaria 24h**:
-   - En las coordenadas del Pacífico guatemalteco (`14.013722, -90.771611`), la temporada lluviosa de septiembre/octubre presenta chubascos nocturnos y nubosidad de tormenta que provocarían que `precipitation_sum > 0` y `cloud_cover_max > 75%` en prácticamente el 100% de los días a nivel de 24 horas.
-   - Por ello, el sistema adopta como modo principal la **agregación sobre la franja diurna operativa (08:00 a 16:00)** consultando las variables horarias de Open-Meteo. También se soporta modo `--mock-clima ideal|marginal|prohibido` para pruebas reproducibles.
-
-3. **Invariante de Evidencia Meteorológica por Turno**:
-   - Para evitar fallos de red o latencia al confirmar citas, la evidencia meteorológica obtenida es válida durante todo el turno de conversación.
-   - La función `agendar_cita` verifica que: `fecha_cita == fecha_evidencia`, `coords == coords_base` y `veredicto != PROHIBIDO`.
-
-4. **Persistencia Transaccional con Restricción Única**:
-   - Tabla `citas` en PostgreSQL con restricción `UNIQUE (fecha, hora)` que impide sobrecupos (1 cita por franja de 1 hora, 8 franjas diarias de 08:00 a 15:00).
-   - Idempotencia garantizada por clave única.
-
----
-
-## 3. Instalación y Configuración
-
-### 3.1 Requisitos Previos y Entorno Python
-
-El proyecto requiere **uv**, **Docker / Docker Compose** y **Node.js 20 o superior** para las evaluaciones con Promptfoo. La versión de Python está fijada en 3.12 y `uv` crea y administra automáticamente el entorno virtual:
-
-```bash
-uv sync
-```
-
-No es necesario activar `.venv` ni instalar dependencias con `pip`; `pyproject.toml` y `uv.lock` son las fuentes de dependencias reproducibles del proyecto.
-
----
-
-### 3.2 Base de Datos PostgreSQL con pgvector
-
-Una vez que el motor de Docker esté en ejecución, levanta el contenedor con la base de datos y la extensión vectorial:
-
-```bash
-docker compose up -d
-docker compose ps
-```
-*(El comando es idéntico en Linux, macOS y Windows PowerShell/CMD).*
-
-### 3.3 Configuración del archivo `.env`
-
-Copia la plantilla de variables de entorno según tu sistema operativo:
-
-- **Linux / macOS**:
-  ```bash
-  cp .env.example .env
-  ```
-- **Windows (PowerShell)**:
-  ```powershell
-  Copy-Item .env.example .env
-  ```
-- **Windows (CMD)**:
-  ```cmd
-  copy .env.example .env
-  ```
-
-Configura tus credenciales en el archivo `.env`:
-```dotenv
-NVIDIA_API_KEY=<tu-clave-de-nvidia>
-OPENAI_BASE_URL=https://integrate.api.nvidia.com/v1
-MODEL=z-ai/glm-5.3
-DATABASE_URL=postgresql://parachute:parachutepass@localhost:5432/parachutedb
-FAQ_TABLE=faqs
-CITAS_TABLE=citas
-```
-
----
-
-## 4. Guía de Ejecución
-
-### 4.1 Carga del Corpus de FAQs
-Genera embeddings normalizados de 384 dimensiones y carga las 120 FAQs en PostgreSQL:
-```bash
-uv run python main.py load
-```
-
-### 4.2 Prueba de Humo con Fallback de Modelos
-Valida la conectividad a NVIDIA NIM y comprueba tool calling, `as_tool()`, `handoff()` y desactivación de telemetría:
-```bash
-uv run python main.py smoke-test
-```
-
-### 4.3 Ejecución del Chat en las Tres Arquitecturas
-
-Puedes iniciar una sesión interactiva en cualquiera de las tres arquitecturas:
-
-- **Arquitectura Centralizada (predeterminada)**:
-  ```bash
-  uv run python main.py chat-local --arquitectura centralizada
-  ```
-- **Arquitectura Jerárquica**:
-  ```bash
-  uv run python main.py chat-local --arquitectura jerarquica
-  ```
-- **Arquitectura Descentralizada**:
-  ```bash
-  uv run python main.py chat-local --arquitectura descentralizada
-  ```
-
-*Nota: También puedes ejecutar directamente `uv run python arch_centralizada.py`, `uv run python arch_jerarquica.py` o `uv run python arch_descentralizada.py`.*
-
-#### 🧪 Simulación de Escenarios Meteorológicos con `--mock-clima`
-
-El reloj normal utiliza la fecha actual de Guatemala y se actualiza al cambiar
-de día. La antigua variable `BASE_DATE` ya no se utiliza: las pruebas y las
-evaluaciones históricas inyectan explícitamente el 18 de septiembre de 2026.
-
-Para probar determinísticamente los guardarraíles sin depender del clima real del día:
-```bash
-# Simular condiciones óptimas (viento bajo, despejado, sin lluvia)
-uv run python main.py chat-local --arquitectura centralizada --mock-clima ideal
-
-# Simular condiciones de riesgo (lluvia o viento fuerte que veta la reserva)
-uv run python main.py chat-local --arquitectura centralizada --mock-clima prohibido
-```
-
-Para reproducir los ejemplos históricos del evento con clima simulado:
-
-```bash
-uv run python main.py chat-local --mock-clima ideal --fecha-base 2026-09-18
-```
-
-`--fecha-base` requiere `--mock-clima`. El escenario elegido por el operador
-prevalece sobre cualquier modo solicitado por el modelo. Puedes seleccionar el
-modelo con `--modelo`; la opción se aplica a cualquiera de las tres arquitecturas.
-`chat` se conserva temporalmente como alias local hasta incorporar el cliente A2A.
-
-#### 💬 Ejemplos de Preguntas y Flujos para Probar
-
-A continuación se presentan consultas sugeridas para validar la especialización de cada agente, las transferencias de control y los guardarraíles del sistema:
-
-##### 1. Conocimiento y Políticas (FAQs RAG)
-Prueba la recuperación semántica sobre la base de 120 preguntas frecuentes:
-- *"¿Cuáles son los requisitos de peso y edad mínima para realizar un salto tándem?"*
-- *"¿Qué tipo de ropa y calzado recomiendan llevar el día de la actividad?"*
-- *"¿Qué certificaciones tienen los instructores y qué incluye el seguro de salto?"*
-
-##### 2. Evaluación Meteorológica y Reglas de Seguridad
-Prueba la consulta a Open-Meteo y el evaluador determinista en Python (`core/safety.py`):
-- *"¿Es seguro saltar mañana? ¿Cómo estarán el viento y la nubosidad en la zona de salto?"*
-- *"¿Se puede saltar el próximo sábado en la mañana en las coordenadas del evento?"*
-- *"¿Qué sucede si hay ráfagas de viento mayores a 30 km/h el día de mi salto?"*
-
-##### 3. Flujo Integrado: Consulta de Clima + Reserva de Cita
-Prueba la coordinación completa: el sistema evalúa el clima y, solo si es viable, reserva en PostgreSQL:
-- *"Hola, quiero agendar un salto para mañana a las 10:00 a nombre de Diego Calderón (correo: diego@example.com, tel: 5555-1234). ¿Las condiciones climáticas lo permiten?"*
-- *"¿Hay cupos disponibles para pasado mañana entre las 09:00 y las 12:00? Si el clima es apto, resérvame a las 11:00 para María López (maria@example.com, tel: 4444-1234)."*
-
-##### 4. Control de Límites y Preguntas Fuera de Dominio
-Prueba que los agentes no alucinen ni desvíen su propósito:
-- *"¿Me pueden vender un boleto de avión comercial hacia Flores, Petén?"* (debe declinar amablemente y enfocarse en saltos de paracaidismo de Parachute S.A.).
-- *"¿Cuál es la receta para preparar un pastel de chocolate?"*
-
-### 4.4 Pruebas Automatizadas
-Ejecuta la suite de pruebas unitarias y de integración (casos frontera de seguridad, fechas relativas, concurrencia de reservas y aislamiento de FAQs):
-```bash
-uv run pytest tests/
-```
-
-Las pruebas de citas crean una tabla `test_citas_<uuid>` por caso y eliminan
-únicamente esa tabla al finalizar. No limpian ni modifican las citas de la tabla
-configurada para la aplicación. Requieren PostgreSQL disponible; las pruebas que
-no usan persistencia no abren conexiones a la base de datos.
-
-### 4.5 Benchmark Comparativo de Arquitecturas
-Ejecuta la matriz comparativa de latencia y respuestas:
-```bash
-uv run python main.py benchmark
-```
-Los resultados observados se almacenan en `data/comparativa_arquitecturas.json`.
-
-### 4.6 Evals con Promptfoo (Resumen Rápido)
-
-Para ejecutar rápidamente la suite de evaluación con Promptfoo:
-
-```bash
-# Instalar dependencias de evaluación
-npm ci
-
-# Ejecutar suite con intérprete del entorno virtual
-PROMPTFOO_PYTHON=.venv/bin/python npm run eval:ci
-
-# Abrir visor interactivo en navegador
-npm run eval:view
-```
-
-El reporte de evaluación se guarda en `evals/results/promptfoo.json`. Para ver la documentación detallada de la metodología, justificación, tipos de evals y resultados, consulta la [Sección 5](#5-hoja-de-trabajo-6--evals-con-promptfoo-puesta-en-producción).
-
----
-
-## 5. Hoja de Trabajo #6 — Evals con Promptfoo (Puesta en Producción)
-
-Para cerrar el ciclo de desarrollo previo a la puesta en producción en Parachute S.A., se implementó un marco formal de evaluaciones (**Evals**) utilizando **Promptfoo**. Este framework evalúa de manera continua, reproducible y automatizada las dos funcionalidades críticas del sistema sobre la arquitectura seleccionada.
-
----
-
-### 5.1 Selección y Justificación de la Mejor Arquitectura
-
-Tras el análisis comparativo y el benchmark de la Hoja de Trabajo #5, se seleccionó la **Arquitectura Centralizada (`arch_centralizada.py`)** como la mejor solución técnica para producción por las siguientes razones:
-
-1. **Control Determinista y Prevención de Desvíos**:
-   El orquestador central funge como único punto de contacto y orquesta las herramientas (`consultar_faqs`, `consultar_clima_seguridad`, `gestionar_agenda`) garantizando que los flujos sigan el protocolo operacional sin desviaciones ni alucinaciones de roles.
-2. **Eficiencia en Tokens y Latencia**:
-   La arquitectura jerárquica introduce supervisores intermedios que aumentan la latencia y el consumo de tokens en turnos dobles de delegación. La descentralizada, por su parte, requiere transferencias de estado (`handoff`) propensas a dispersión de contexto. La centralizada ofrece el mejor balance entre velocidad de respuesta y trazabilidad.
-3. **Auditabilidad y Verificación de Herramientas**:
-   Permite registrar e inspeccionar en una sola secuencia de ejecución (`tool_sequence`) cada herramienta ejecutada, facilitando aserciones de seguridad y guardarraíles deterministas en CI/CD.
-
----
-
-### 5.2 Funcionalidades Evaluadas del Sistema
-
-El agente de Parachute S.A. tiene dos capacidades fundamentales, ambas cubiertas exhaustivamente en la suite de evaluación:
-
-1. **Resolución de Preguntas Frecuentes (FAQs RAG)**:
-   - Consulta sobre el corpus de 120 preguntas institucionales indexadas en PostgreSQL con pgvector (HNSW).
-   - Respuestas con fuentes exactas (`FAQ-ID`), montos de recargos por peso y tiempos de espera médica.
-   - Derivación controlada a soporte humano (`soporte@parachutesa.gt`) cuando la información requerida no existe en la base de conocimiento oficial.
-2. **Calendarización y Gestión de Citas**:
-   - Resolución de fechas relativas a formato ISO (`YYYY-MM-DD`).
-   - Evaluación meteorológica obligatoria (Open-Meteo o fixtures deterministas) sobre la ventana diurna operativa (08:00 a 16:00).
-   - Invariante de seguridad: veto estricto de agendamiento si el veredicto meteorológico es `PROHIBIDO` o la fecha está fuera de la ventana del evento.
-   - Reserva atómica en PostgreSQL con verificación de disponibilidad de cupo (1 cita por hora).
-
----
-
-### 5.3 Tipos de Evaluaciones Implementadas
-
-La configuración en [`evals/promptfooconfig.yaml`](evals/promptfooconfig.yaml) y [`evals/casos.yaml`](evals/casos.yaml) implementa las cuatro dimensiones de evaluación requeridas:
-
-| Tipo de Eval | Propósito y Criterio | Implementación en Promptfoo |
-| :--- | :--- | :--- |
-| **Factualidad (`factuality`)** | Evalúa que la respuesta del agente no alucine y sea semánticamente fiel a la verdad institucional (e.g. peso máximo estricto de 100 kg, recargo de Q250 entre 90 y 100 kg, espera de 24h tras buceo). | Evaluador basado en LLM vía NVIDIA NIM ([`evals/grader_nvidia.py`](evals/grader_nvidia.py)) con el modelo activo (`z-ai/glm-5.3`). |
-| **Determinísticos (`contains` / `regex`)** | Verificación estricta de códigos de FAQ obligatorios (`FAQ-021`, `FAQ-029`), valores exactos (`100 kg`, `24 horas`, `Q250`), correo oficial (`soporte@parachutesa.gt`), estados de veredicto (`IDEAL`, `MARGINAL`, `PROHIBIDO`) y expresiones de denegación. | Aserciones estándar `contains` y `regex` con soporte insensible a mayúsculas/minúsculas. |
-| **Latencia (`latency`)** | Garantizar que el agente responda dentro de límites operacionales aceptables en un entorno de producción. | Aserción global en `defaultTest`: `latency_ms < 120000` (120 segundos). |
-| **Ejecución de Herramientas (`tool execution`)** | Validar que el agente llame a las herramientas correctas en el orden adecuado, y que **se abstenga** de llamar a herramientas transaccionales ante condiciones adversas. | Aserciones `javascript` sobre `tool_sequence` y `appointment.exito`: <br/>• Flujo positivo: verifica la secuencia completa `['resolver_fecha', 'consultar_clima', 'evaluar_condiciones', 'consultar_disponibilidad', 'agendar_cita']`. <br/>• Guardarraíl negativo: comprueba que `agendar_cita` **no** se invoque ante veredicto `PROHIBIDO` o fecha fuera de ventana. |
-
----
-
-### 5.4 Aislamiento Transaccional y Reproducibilidad
-
-Para garantizar que la suite de evaluación sea 100% determinista, aislada y ejecutable en CI/CD:
-
-1. **Aislamiento de Citas en Base de Datos ([`evals/isolated_agenda.py`](evals/isolated_agenda.py))**:
-   Cada caso de evaluación corre en su propio esquema temporal en PostgreSQL creando una tabla efímera `eval_citas_<uuid>`. Esto evita que las reservas de un caso de prueba colisionen o bloqueen franjas horarias en casos subsiguientes, y elimina el riesgo de contaminar la tabla de citas de producción.
-2. **Fixtures Meteorológicos Deterministas**:
-   Se emplean modos mock (`ideal`, `marginal`, `prohibido`) en los casos de reserva para evaluar los guardarraíles de seguridad sin depender de la conectividad o fluctuaciones de la API de Open-Meteo.
-3. **Modo Offline de Embeddings**:
-   Se exportan `HF_HUB_OFFLINE=1` y `TRANSFORMERS_OFFLINE=1` en [`evals/run_promptfoo.sh`](evals/run_promptfoo.sh) y [`evals/provider_centralizada.py`](evals/provider_centralizada.py) para utilizar el modelo local predescargado de `SentenceTransformer`, evitando peticiones externas redundantes.
-4. **Cierre Limpio de Conexiones Asíncronas**:
-   El proveedor asíncrono cierra explícitamente el cliente HTTP y los transportes de conexión en bloques `finally`, evitando excepciones de bucle de eventos cerrado (`RuntimeError: Event loop is closed`) en versiones recientes de Python (3.11+ / 3.14).
-
----
-
-### 5.5 Guía de Ejecución y Reporte de Entrega
-
-#### Prerrequisitos
-- Node.js 20 o superior y npm.
-- uv con Python 3.12 y dependencias sincronizadas mediante `uv sync`.
-- Base de datos PostgreSQL iniciada con Docker Compose y corpus de FAQs cargado (`uv run python main.py load`).
-- Clave de API de NVIDIA configurada en `.env`.
-
-#### Ejecución de la Suite (CI Mode)
-```bash
-# 1. Instalar dependencias de evaluación
-npm ci
-
-# 2. Ejecutar la evaluación especificando el intérprete de Python del entorno virtual
-PROMPTFOO_PYTHON=.venv/bin/python npm run eval:ci
-```
-
-#### Visualización Interactiva en Navegador
-Para abrir la interfaz web de Promptfoo y explorar las respuestas, prompts, tokens, latencias y detalles de cada aserción:
-```bash
-npm run eval:view
-```
-
-#### Archivo de Reporte para la Entrega
-El archivo de reporte generado por Promptfoo ha sido confirmado y versionado en el repositorio:
-- 📄 **Ruta del reporte:** [`evals/results/promptfoo.json`](evals/results/promptfoo.json)
-- **Estado de la evaluación:**
-  - ✅ **Tests aprobados:** **7 / 7 (100% PASS)**
-  - ❌ **Tests fallidos:** **0 (0%)**
-  - ⚠️ **Errores de ejecución:** **0 (0%)**
-
----
-
-## 6. Documentación e Informe Técnico (HDT5)
-
-El informe académico formal de la práctica HDT5, con las respuestas fundamentadas a las preguntas de diseño, el análisis crítico de desempeño y los diagramas de flujo, se encuentra disponible en formato PDF en la carpeta `docs/`:
-
-- 📄 **Documento completo:** [docs/Hoja de trabajo 5 - Orquestación.pdf](docs/Hoja%20de%20trabajo%205%20-%20Orquestaci%C3%B3n.pdf)
-
-### Previsualización del Informe
-
-<p align="center">
-  <a href="docs/Hoja%20de%20trabajo%205%20-%20Orquestaci%C3%B3n.pdf" title="Clic para abrir el PDF">
-    <img src="docs/preview_informe.png" alt="Previsualización del Informe Técnico PDF" width="750"/>
-  </a>
-  <br/>
-  <em>Haz clic en la imagen superior para abrir o descargar el documento PDF completo (4 páginas).</em>
-</p>
-
-## 7. Nueva HDT — Servidor MCP
-
-El servidor MCP reutiliza las siete herramientas de negocio de las hojas
-anteriores y las expone en `http://127.0.0.1:8001/mcp` mediante **Streamable HTTP**.
-No requiere clave LLM: las consultas FAQ usan embeddings locales y PostgreSQL,
-y el clima utiliza Open-Meteo o el escenario simulado.
-
-```bash
-# Clima real y fecha actual de Guatemala
-uv run python main.py mcp-server
-
-# Demostración reproducible de las fechas del evento
-uv run python main.py mcp-server --mock-clima ideal --fecha-base 2026-09-18
-```
-
-El puerto se puede cambiar con `--puerto`. Los modos de simulación disponibles
-son `ideal`, `marginal` y `prohibido`; una fecha fija exige simulación. El cliente
-remoto no elige `mock_mode` ni la arquitectura registrada en las reservas.
-
-| Dominio | Herramientas MCP |
+| Especialista | Herramientas MCP |
 | --- | --- |
 | FAQs | `buscar_faqs` |
 | Clima y seguridad | `resolver_fecha`, `consultar_clima`, `evaluar_condiciones` |
 | Agenda | `consultar_disponibilidad`, `agendar_cita`, `listar_citas` |
 
-Las respuestas conservan el JSON de las herramientas locales como contenido de
-texto MCP. Se registra cada llamada con herramienta, estado, duración e
-identificador de solicitud, sin imprimir argumentos personales ni resultados.
-El cliente puede propagar un UUID en `_meta.request_id` para correlacionar logs.
+Las FAQs se recuperan mediante embeddings de 384 dimensiones y búsqueda vectorial. La seguridad se evalúa con reglas deterministas; las reservas requieren evidencia meteorológica válida y respetan restricciones de fecha, horario, cupo e idempotencia.
 
-El transporte HTTP no guarda sesiones, pero la evidencia meteorológica se
-comparte entre herramientas dentro del único proceso MCP. Reiniciar ese proceso
-obliga a consultar el clima nuevamente antes de reservar.
+| Interfaz | Dirección predeterminada |
+| --- | --- |
+| MCP Streamable HTTP | `http://127.0.0.1:8001/mcp` |
+| A2A 1.0, JSON-RPC, sin streaming | `http://127.0.0.1:8000/` |
+| Agent Card | `http://127.0.0.1:8000/.well-known/agent-card.json` |
 
-### Recurso del corpus
+A2A conserva el historial por `context_id` y serializa los turnos de una misma conversación. Cada turno genera una tarea; una reserva confirmada incorpora el comprobante original de MCP como artefacto separado. Los logs registran estado, duración e identificadores de solicitud para correlacionar ambos servidores.
 
-`parachute://faqs/corpus` publica el archivo original de 120 FAQs como texto UTF-8,
-de solo lectura. A diferencia de `buscar_faqs`, leer este recurso no genera
-embeddings ni ejecuta búsquedas en PostgreSQL. No se publican prompts MCP.
-El corpus conserva las limitaciones de contenido de las hojas anteriores:
-106 respuestas son genéricas.
+## Instalación
 
-Con MCP ejecutándose, puedes comprobar el protocolo desde otra terminal:
+Requisitos: `uv`, Python 3.12 administrado por `uv` y Docker Compose.
 
 ```bash
-uv run python - <<'PY'
-import asyncio
-from mcp import Client
-
-async def main():
-    async with Client("http://127.0.0.1:8001/mcp") as client:
-        print([tool.name for tool in (await client.list_tools()).tools])
-        print([str(resource.uri) for resource in (await client.list_resources()).resources])
-        result = await client.read_resource("parachute://faqs/corpus")
-        print(result.contents[0].text[:500])
-
-asyncio.run(main())
-PY
+uv sync
+cp -n .env.example .env
 ```
 
-Las pruebas de MCP levantan HTTP local real y verifican reservas en tablas
-aisladas, sin consumir el LLM. La exposición A2A y la conversión de la terminal
-en cliente A2A se implementarán en los siguientes hitos.
+Configura `NVIDIA_API_KEY` en `.env` y verifica que `DATABASE_URL` corresponda a las variables `POSTGRES_*`. La copia no sobrescribe un `.env` existente. No publiques este archivo.
 
-## 8. MAS centralizado como cliente MCP
-
-`mas_mcp.py` conecta el orquestador y sus tres especialistas al servidor MCP.
-Reutiliza las instrucciones y delegaciones existentes; en modo remoto los
-especialistas no cargan las herramientas locales ni los servicios de PostgreSQL
-y embeddings. `chat-local` y las evaluaciones anteriores conservan su modo local.
-
-Una sola conexión MCP se comparte entre especialistas, con el catálogo filtrado
-por dominio según la tabla anterior. Estos filtros limitan lo que ve cada agente;
-el servidor MCP sigue publicando sus siete herramientas para sus clientes.
-
-Con el servidor MCP de demostración activo, puedes probar el MAS desde otra
-terminal. Este ejemplo **sí utiliza NVIDIA NIM** y requiere la clave del `.env`:
+Prepara PostgreSQL, el corpus y la tabla de reservas:
 
 ```bash
-uv run python - <<'PY'
-import asyncio
-from mas_mcp import conectar_mas_mcp, ejecutar_turno_mcp
-
-async def main():
-    async with conectar_mas_mcp() as orquestador:
-        resultado, comprobante = await ejecutar_turno_mcp(
-            orquestador, "¿Es seguro saltar el 2026-09-29?"
-        )
-        print(resultado.final_output)
-        if comprobante:
-            print(comprobante)
-
-asyncio.run(main())
-PY
+docker compose up -d
+docker compose ps
+uv run python main.py load
+uv run python -c 'from core.persistence import inicializar_esquema; inicializar_esquema()'
 ```
 
-La conexión admite `mcp_url` y `model_name`. El cliente LLM y el cliente MCP se
-cierran al salir del bloque, también si ocurre un error; se reutilizan entre
-turnos mientras permanezca abierto. Las peticiones incluyen un UUID en
-`_meta.request_id`, compartido por las llamadas de un mismo turno.
+Espera a que PostgreSQL esté disponible antes de cargar los datos. `load` crea la extensión `vector` y carga las 120 FAQs; la inicialización de agenda crea su tabla si no existe. La primera carga descarga el modelo de embeddings y requiere conexión a internet y espacio disponible.
 
-`ejecutar_turno_mcp` devuelve el resultado nativo de Agents y el comprobante exacto
-de la herramienta remota, recogido por un hook en el especialista de agenda.
-Cada turno tiene su propio contexto: el comprobante no se obtiene de una variable
-global del cliente ni del texto redactado por el modelo. Para continuar una
-conversación se puede pasar `resultado.to_input_list()` junto con el nuevo mensaje;
-la conservación del historial por conversación corresponderá al servidor A2A.
+## Ejecución
 
-Los fallos de transporte se propagan al consumidor y las llamadas MCP no se
-reintentan automáticamente, evitando repetir una reserva de resultado incierto.
-Las pruebas de integración usan Agents, delegaciones y HTTP MCP reales con el
-modelo simulado del SDK, además de tablas aisladas para las reservas.
+Inicia los procesos en este orden, cada uno en una terminal independiente:
+
+```bash
+# 1. Herramientas: clima real y fecha actual de Guatemala
+uv run python main.py mcp-server
+
+# 2. Sistema multiagente
+uv run python main.py a2a-server
+
+# 3. Cliente remoto
+uv run python main.py chat
+```
+
+Para reproducir las fechas históricas del evento, sustituye el primer comando por:
+
+```bash
+uv run python main.py mcp-server --mock-clima ideal --fecha-base 2026-09-18
+```
+
+Los escenarios disponibles son `ideal`, `marginal` y `prohibido`. `--fecha-base` exige simulación; el cliente y el modelo no pueden cambiar el escenario fijado por el servidor.
+
+Ambos servidores admiten `--puerto`. A2A acepta `--mcp-url` y `--modelo`; el cliente acepta `--a2a-url` y `--mcp-url` para conectarse a direcciones distintas.
+
+### Comandos del cliente
+
+| Entrada | Operación |
+| --- | --- |
+| Mensaje de texto | Nueva tarea A2A en la conversación actual |
+| `/nuevo` | Nueva conversación, sin eliminar reservas |
+| `/recursos` | Listado de recursos MCP |
+| `/recurso parachute://faqs/corpus` | Lectura del corpus sin inferencia ni búsqueda vectorial |
+| `/ayuda` | Ayuda de comandos |
+| `/salir` | Cierre del cliente |
+
+Ejemplos para la configuración simulada anterior:
+
+```text
+¿Cuál es el peso máximo permitido para saltar? Cita la FAQ consultada.
+¿Es seguro saltar el 2026-09-29? Consulta el clima y evalúa las condiciones.
+```
+
+## Verificación
+
+Con PostgreSQL activo:
+
+```bash
+uv run python -m pytest -q tests/ evals/test_providers.py
+```
+
+Las pruebas de protocolos utilizan HTTP real, respuestas LLM simuladas y tablas PostgreSQL aisladas. Cubren herramientas, filtros por especialista, historial, concurrencia, comprobantes, recursos, errores de transporte y cierre de conexiones. Las comprobaciones manuales con NVIDIA consumen llamadas al proveedor.
+
+## Compatibilidad y documentación
+
+Las arquitecturas locales de las hojas anteriores permanecen disponibles:
+
+```bash
+uv run python main.py chat-local --arquitectura centralizada
+uv run python main.py chat-local --arquitectura jerarquica
+uv run python main.py chat-local --arquitectura descentralizada
+```
+
+`chat-local` admite `--modelo`, `--mock-clima` y `--fecha-base`. También se conservan `main.py smoke-test` y `main.py benchmark` mediante `uv run python`. Las evaluaciones históricas de Promptfoo requieren Node.js y se ejecutan con `npm ci` y `npm run eval:ci`.
+
+- [Diseño de MCP y A2A](docs/diseno_mcp_a2a.md).
+- [Informe de orquestación](docs/Hoja%20de%20trabajo%205%20-%20Orquestaci%C3%B3n.pdf).
+- [Configuración de evaluaciones](evals/promptfooconfig.yaml) y [reporte histórico](evals/results/promptfoo.json).
+
+## Límites conocidos
+
+- Los servidores están limitados a localhost, sin autenticación adicional ni despliegue público.
+- El historial y las tareas se pierden al reiniciar A2A; las evidencias meteorológicas se pierden al reiniciar MCP. Las reservas permanecen en PostgreSQL.
+- El cliente espera hasta 180 segundos por respuesta. Un timeout no revierte una reserva ni provoca un reintento automático; consulta las citas antes de repetirla.
+- Una tarea `COMPLETED` indica que el turno terminó, no que una reserva fue aprobada.
+- El recurso del corpus es de solo lectura; no se publican prompts MCP. El corpus histórico conserva 106 respuestas genéricas.
