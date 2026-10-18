@@ -88,3 +88,34 @@ def test_ayuda_no_importa_servicios_locales():
     result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
     assert "chat-local" in result.stdout
+
+
+def test_comando_a2a_envia_opciones_al_servidor(monkeypatch):
+    start = MagicMock()
+    monkeypatch.setitem(sys.modules, "a2a_server", SimpleNamespace(main=start))
+    main.main(["a2a-server", "--puerto", "8100", "--mcp-url", "http://127.0.0.1:8101/mcp", "--modelo", "modelo"])
+    start.assert_called_once_with(puerto=8100, mcp_url="http://127.0.0.1:8101/mcp", model_name="modelo")
+
+
+@pytest.mark.parametrize("puerto", ["0", "65536"])
+def test_rechaza_puerto_a2a_invalido(puerto):
+    with pytest.raises(SystemExit) as error:
+        main.parse_arguments(["a2a-server", "--puerto", puerto])
+    assert error.value.code == 2
+
+
+def test_chat_utiliza_cliente_remoto(monkeypatch):
+    start = MagicMock()
+    monkeypatch.setitem(sys.modules, "terminal", SimpleNamespace(main=start))
+    main.main(["chat", "--a2a-url", "http://127.0.0.1:8100", "--mcp-url", "http://127.0.0.1:8101/mcp"])
+    start.assert_called_once_with(a2a_url="http://127.0.0.1:8100", mcp_url="http://127.0.0.1:8101/mcp")
+
+
+@pytest.mark.parametrize("opcion,valor", [
+    ("--arquitectura", "centralizada"), ("--modelo", "modelo"),
+    ("--mock-clima", "ideal"), ("--fecha-base", "2026-09-18"),
+])
+def test_chat_no_acepta_configurar_servicios_locales(opcion, valor):
+    with pytest.raises(SystemExit) as error:
+        main.parse_arguments(["chat", opcion, valor])
+    assert error.value.code == 2
