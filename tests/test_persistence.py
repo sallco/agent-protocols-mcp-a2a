@@ -7,9 +7,13 @@ import pytest
 from core.persistence import Cita, guardar_cita, listar_citas_fecha, obtener_cita_por_idempotencia
 
 
-def test_guardar_cita_y_recuperacion_idempotente() -> None:
-    cita_id = str(uuid.uuid4())
-    idempotency_key = f"test-idemp-{uuid.uuid4()}"
+@pytest.mark.parametrize("cita_id", [
+    "00000000-0000-0000-0000-000000000001",
+    "00000000-0000-0000-0000-000000000002",
+])
+def test_guardar_cita_y_recuperacion_idempotente(agenda_aislada: str, cita_id: str) -> None:
+    # Repetir clave y franja exige aislamiento real entre ambos casos.
+    idempotency_key = "test-idemp-aislamiento"
     fecha = "2026-09-29"
     hora = "08:00"
 
@@ -58,7 +62,7 @@ def test_guardar_cita_y_recuperacion_idempotente() -> None:
     assert any(c.id == cita_id for c in citas_dia)
 
 
-def test_rechazo_veredicto_prohibido_en_bd() -> None:
+def test_rechazo_veredicto_prohibido_en_bd(agenda_aislada: str) -> None:
     # La restricción SQL CHECK citas_veredicto_valido solo admite IDEAL o MARGINAL
     cita_prohibida = Cita(
         id=str(uuid.uuid4()),

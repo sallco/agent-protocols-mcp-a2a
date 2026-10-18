@@ -7,7 +7,7 @@ from core.scheduling import SchedulingService
 from core.weather import WeatherClient
 
 
-def test_consultar_disponibilidad() -> None:
+def test_consultar_disponibilidad(agenda_aislada: str) -> None:
     service = SchedulingService()
     disp = service.consultar_disponibilidad("2026-09-29")
     assert disp["valida"] is True
@@ -62,7 +62,7 @@ def test_agendar_rechazo_clima_prohibido() -> None:
     assert "PROHIBIDO" in res.mensaje
 
 
-def test_agendar_exito_marginal_con_advertencias() -> None:
+def test_agendar_exito_marginal_con_advertencias(agenda_aislada: str) -> None:
     weather_client = WeatherClient()
     evidencia_marginal = weather_client.consultar("2026-09-29", mock_mode="marginal")
 

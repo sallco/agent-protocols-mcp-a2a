@@ -228,10 +228,15 @@ Prueba que los agentes no alucinen ni desvíen su propósito:
 - *"¿Cuál es la receta para preparar un pastel de chocolate?"*
 
 ### 4.4 Pruebas Automatizadas
-Ejecuta la suite completa de 40 pruebas unitarias y de integración (casos frontera de seguridad, fechas relativas, concurrencia de reservas y aislamiento de FAQs):
+Ejecuta la suite de pruebas unitarias y de integración (casos frontera de seguridad, fechas relativas, concurrencia de reservas y aislamiento de FAQs):
 ```bash
 uv run pytest tests/
 ```
+
+Las pruebas de citas crean una tabla `test_citas_<uuid>` por caso y eliminan
+únicamente esa tabla al finalizar. No limpian ni modifican las citas de la tabla
+configurada para la aplicación. Requieren PostgreSQL disponible; las pruebas que
+no usan persistencia no abren conexiones a la base de datos.
 
 ### 4.5 Benchmark Comparativo de Arquitecturas
 Ejecuta la matriz comparativa de latencia y respuestas:

@@ -14,7 +14,7 @@ from core.scheduling import SchedulingService
 from core.weather import WeatherClient
 
 
-def test_concurrencia_dos_reservas_misma_franja() -> None:
+def test_concurrencia_dos_reservas_misma_franja(agenda_aislada: str) -> None:
     """Dos intentos concurrentes para exactamente la misma franja deben resultar en 1 reserva."""
     weather_client = WeatherClient()
     evidencia = weather_client.consultar("2026-09-29", mock_mode="ideal")
@@ -48,7 +48,7 @@ def test_concurrencia_dos_reservas_misma_franja() -> None:
     assert len(citas_franja) == 1
 
 
-def test_reintento_idempotente_misma_clave() -> None:
+def test_reintento_idempotente_misma_clave(agenda_aislada: str) -> None:
     """Reintentar con la misma clave de idempotencia retorna el mismo ID sin duplicar."""
     weather_client = WeatherClient()
     evidencia = weather_client.consultar("2026-09-29", mock_mode="ideal")
@@ -97,7 +97,7 @@ def test_aislamiento_de_faq_103_frente_a_seguridad() -> None:
     assert evaluacion.es_seguro_saltar is False
 
 
-def test_reserva_marginal_con_advertencia_persistida() -> None:
+def test_reserva_marginal_con_advertencia_persistida(agenda_aislada: str) -> None:
     """Una reserva en condiciones marginales debe persistirse con su advertencia de tándem."""
     weather_client = WeatherClient()
     evidencia = weather_client.consultar("2026-09-29", mock_mode="marginal")

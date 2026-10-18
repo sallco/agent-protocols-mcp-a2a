@@ -43,7 +43,7 @@ def test_tool_consultar_clima_y_evaluacion() -> None:
     assert eval_data["es_seguro"] is True
 
 
-def test_tool_agendar_y_comprobante() -> None:
+def test_tool_agendar_y_comprobante(agenda_aislada: str) -> None:
     limpiar_ultimo_comprobante()
     # 1. Obtener evidencia
     raw_clima = fn_consultar_clima("2026-09-29", mock_mode="marginal")
