@@ -56,6 +56,28 @@ def test_rechaza_configuracion_invalida(argumentos):
     assert error.value.code == 2
 
 
+def test_comando_mcp_envia_opciones_al_servidor(monkeypatch):
+    start = MagicMock()
+    monkeypatch.setitem(sys.modules, "mcp_server", SimpleNamespace(main=start))
+    main.main([
+        "mcp-server", "--puerto", "8101", "--mock-clima", "marginal",
+        "--fecha-base", "2026-09-18",
+    ])
+    start.assert_called_once_with(mock_clima="marginal", fecha_base="2026-09-18", puerto=8101)
+
+
+@pytest.mark.parametrize("argumentos", [
+    ["mcp-server", "--fecha-base", "2026-09-18"],
+    ["mcp-server", "--mock-clima", "ideal", "--fecha-base", "2026-02-30"],
+    ["mcp-server", "--puerto", "0"],
+    ["mcp-server", "--puerto", "65536"],
+])
+def test_rechaza_opciones_mcp_invalidas(argumentos):
+    with pytest.raises(SystemExit) as error:
+        main.parse_arguments(argumentos)
+    assert error.value.code == 2
+
+
 def test_ayuda_no_importa_servicios_locales():
     code = (
         "import sys, main; "

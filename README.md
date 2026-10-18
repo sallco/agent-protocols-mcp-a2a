@@ -391,3 +391,41 @@ El informe académico formal de la práctica HDT5, con las respuestas fundamenta
   <br/>
   <em>Haz clic en la imagen superior para abrir o descargar el documento PDF completo (4 páginas).</em>
 </p>
+
+## 7. Nueva HDT — Servidor MCP
+
+El servidor MCP reutiliza las siete herramientas de negocio de las hojas
+anteriores y las expone en `http://127.0.0.1:8001/mcp` mediante **Streamable HTTP**.
+No requiere clave LLM: las consultas FAQ usan embeddings locales y PostgreSQL,
+y el clima utiliza Open-Meteo o el escenario simulado.
+
+```bash
+# Clima real y fecha actual de Guatemala
+uv run python main.py mcp-server
+
+# Demostración reproducible de las fechas del evento
+uv run python main.py mcp-server --mock-clima ideal --fecha-base 2026-09-18
+```
+
+El puerto se puede cambiar con `--puerto`. Los modos de simulación disponibles
+son `ideal`, `marginal` y `prohibido`; una fecha fija exige simulación. El cliente
+remoto no elige `mock_mode` ni la arquitectura registrada en las reservas.
+
+| Dominio | Herramientas MCP |
+| --- | --- |
+| FAQs | `buscar_faqs` |
+| Clima y seguridad | `resolver_fecha`, `consultar_clima`, `evaluar_condiciones` |
+| Agenda | `consultar_disponibilidad`, `agendar_cita`, `listar_citas` |
+
+Las respuestas conservan el JSON de las herramientas locales como contenido de
+texto MCP. Se registra cada llamada con herramienta, estado, duración e
+identificador de solicitud, sin imprimir argumentos personales ni resultados.
+El cliente puede propagar un UUID en `_meta.request_id` para correlacionar logs.
+
+El transporte HTTP no guarda sesiones, pero la evidencia meteorológica se
+comparte entre herramientas dentro del único proceso MCP. Reiniciar ese proceso
+obliga a consultar el clima nuevamente antes de reservar.
+
+Las pruebas de MCP levantan HTTP local real y verifican reservas en tablas
+aisladas, sin consumir el LLM. La integración del MAS y del chat con A2A se
+implementará en los siguientes hitos.
