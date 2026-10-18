@@ -56,6 +56,17 @@ def resultado_json(result):
     return json.loads(result.content[0].text)
 
 
+def test_ctrl_c_finaliza_sin_propagar_traceback(monkeypatch, caplog):
+    server = MagicMock()
+    server.run.side_effect = KeyboardInterrupt
+    monkeypatch.setattr(mcp_server, "crear_servidor_mcp", lambda **kwargs: server)
+    caplog.set_level(logging.INFO, logger="parachute.mcp")
+
+    mcp_server.main()
+
+    assert "Servidor MCP detenido por el operador" in caplog.text
+
+
 def test_catalogo_contratos_y_clima_del_operador(monkeypatch, caplog):
     monkeypatch.setenv("NVIDIA_API_KEY", "")
     monkeypatch.setenv("OPENAI_API_KEY", "")

@@ -120,7 +120,10 @@ def main(
         "Iniciando MCP en http://127.0.0.1:%s/mcp clima=%s fecha_base=%s",
         puerto, mock_clima or "real", fecha_base or "actual de Guatemala",
     )
-    server.run(
-        transport="streamable-http", host="127.0.0.1", port=puerto,
-        json_response=True, stateless_http=True,
-    )
+    try:
+        server.run(
+            transport="streamable-http", host="127.0.0.1", port=puerto,
+            json_response=True, stateless_http=True,
+        )
+    except KeyboardInterrupt:
+        logger.info("Servidor MCP detenido por el operador.")
