@@ -1,3 +1,5 @@
+from contextvars import Context
+
 from core.tools import (
     instrumentar_herramienta,
     iniciar_traza_herramientas,
@@ -38,3 +40,28 @@ def test_traza_registra_error_y_no_oculta_la_excepcion() -> None:
     assert traza[0]["nombre"] == "herramienta_fallida"
     assert traza[0]["exitosa"] is False
     assert traza[0]["error"] == "fallo controlado"
+
+
+def test_ejecuciones_sin_traza_activa_no_acumulan_resultados() -> None:
+    @instrumentar_herramienta("sin_traza")
+    def herramienta():
+        return "resultado"
+
+    contexto = Context()
+    assert contexto.run(herramienta) == "resultado"
+    assert contexto.run(obtener_traza_herramientas) == []
+
+
+def test_trazas_de_contextos_distintos_no_se_mezclan() -> None:
+    @instrumentar_herramienta("aislada")
+    def herramienta(valor):
+        return valor
+
+    primero, segundo = Context(), Context()
+    primero.run(iniciar_traza_herramientas)
+    primero.run(herramienta, "primero")
+    segundo.run(iniciar_traza_herramientas)
+    segundo.run(herramienta, "segundo")
+
+    assert primero.run(obtener_traza_herramientas)[0]["resultado"] == "primero"
+    assert segundo.run(obtener_traza_herramientas)[0]["resultado"] == "segundo"
