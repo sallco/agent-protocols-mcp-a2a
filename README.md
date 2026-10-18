@@ -426,6 +426,32 @@ El transporte HTTP no guarda sesiones, pero la evidencia meteorológica se
 comparte entre herramientas dentro del único proceso MCP. Reiniciar ese proceso
 obliga a consultar el clima nuevamente antes de reservar.
 
+### Recurso del corpus
+
+`parachute://faqs/corpus` publica el archivo original de 120 FAQs como texto UTF-8,
+de solo lectura. A diferencia de `buscar_faqs`, leer este recurso no genera
+embeddings ni ejecuta búsquedas en PostgreSQL. No se publican prompts MCP.
+El corpus conserva las limitaciones de contenido de las hojas anteriores:
+106 respuestas son genéricas.
+
+Con MCP ejecutándose, puedes comprobar el protocolo desde otra terminal:
+
+```bash
+uv run python - <<'PY'
+import asyncio
+from mcp import Client
+
+async def main():
+    async with Client("http://127.0.0.1:8001/mcp") as client:
+        print([tool.name for tool in (await client.list_tools()).tools])
+        print([str(resource.uri) for resource in (await client.list_resources()).resources])
+        result = await client.read_resource("parachute://faqs/corpus")
+        print(result.contents[0].text[:500])
+
+asyncio.run(main())
+PY
+```
+
 Las pruebas de MCP levantan HTTP local real y verifican reservas en tablas
 aisladas, sin consumir el LLM. La integración del MAS y del chat con A2A se
 implementará en los siguientes hitos.

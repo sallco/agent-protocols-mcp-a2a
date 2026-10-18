@@ -6,13 +6,16 @@ import json
 import logging
 import socket
 from uuid import uuid4
+from unittest.mock import MagicMock
 
 from mcp import Client
 from mcp.types import RequestParamsMeta
+from mcp.shared.exceptions import MCPError
 import pytest
 import uvicorn
 
 from core import tools
+import mcp_server
 from mcp_server import crear_servidor_mcp
 
 
@@ -161,3 +164,54 @@ def test_reservas_reales_en_tabla_aislada(agenda_aislada, modo):
             assert citas["total"] == 1
 
     asyncio.run(escenario())
+
+
+def test_recurso_entrega_corpus_original_sin_ejecutar_herramientas(monkeypatch, caplog):
+    buscar = MagicMock(side_effect=AssertionError("No debe ejecutar RAG"))
+    clima = MagicMock(side_effect=AssertionError("No debe consultar clima"))
+    monkeypatch.setattr(tools._faq_store, "buscar", buscar)
+    monkeypatch.setattr(tools._weather_client, "consultar", clima)
+
+    async def escenario():
+        server = crear_servidor_mcp()
+        async with cliente_http(server) as client:
+            resources = (await client.list_resources()).resources
+            assert len(resources) == 1
+            assert str(resources[0].uri) == "parachute://faqs/corpus"
+            result = await client.read_resource("parachute://faqs/corpus")
+            assert result.contents[0].mime_type == "text/plain"
+            assert result.contents[0].text == mcp_server.CORPUS_PATH.read_text(encoding="utf-8")
+            assert "FAQ-021" in result.contents[0].text
+            assert (await client.list_prompts()).prompts == []
+
+    caplog.set_level(logging.INFO, logger="parachute.mcp")
+    asyncio.run(escenario())
+    buscar.assert_not_called()
+    clima.assert_not_called()
+    assert "recurso=parachute://faqs/corpus estado=completada" in caplog.text
+    assert "herramienta=" not in caplog.text
+
+
+def test_recurso_no_permite_leer_archivos_arbitrarios():
+    async def escenario():
+        async with cliente_http(crear_servidor_mcp()) as client:
+            with pytest.raises(MCPError):
+                await client.read_resource("file:///etc/passwd")
+
+    asyncio.run(escenario())
+
+
+def test_recurso_no_disponible_reporta_error_sin_exponer_ruta(monkeypatch, tmp_path, caplog):
+    monkeypatch.setattr(mcp_server, "CORPUS_PATH", tmp_path / "ruta-privada-inexistente.txt")
+
+    async def escenario():
+        async with cliente_http(crear_servidor_mcp()) as client:
+            with pytest.raises(MCPError, match="No fue posible leer el corpus de FAQs") as error:
+                await client.read_resource("parachute://faqs/corpus")
+            assert "ruta-privada" not in str(error.value)
+            assert len((await client.list_resources()).resources) == 1
+
+    caplog.set_level(logging.INFO, logger="parachute.mcp")
+    asyncio.run(escenario())
+    assert "recurso=parachute://faqs/corpus estado=fallida" in caplog.text
+    assert "ruta-privada" not in caplog.text

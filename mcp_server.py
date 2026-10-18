@@ -5,16 +5,18 @@ from __future__ import annotations
 import json
 import logging
 from functools import wraps
+from pathlib import Path
 from time import perf_counter
 from uuid import UUID, uuid4
 
 from mcp.server import MCPServer
-from mcp.server.mcpserver.exceptions import ToolError
+from mcp.server.mcpserver.exceptions import ResourceError, ToolError
 from mcp.types import CallToolResult
 
 from core import tools
 
 logger = logging.getLogger("parachute.mcp")
+CORPUS_PATH = Path(__file__).resolve().parent / "data" / "Corpus_FAQs_Parachute_SA_2026.txt"
 
 
 def crear_servidor_mcp(
@@ -92,6 +94,19 @@ def crear_servidor_mcp(
         server.tool(name=tool.name, description=tool.description, structured_output=False)(
             proteger(funciones[tool.name])
         )
+
+    @server.resource(
+        "parachute://faqs/corpus", name="corpus_faqs", mime_type="text/plain",
+        description="Corpus original de 120 FAQs de Parachute S.A., de solo lectura.",
+    )
+    def leer_corpus() -> str:
+        try:
+            contenido = CORPUS_PATH.read_text(encoding="utf-8")
+        except (OSError, UnicodeError):
+            logger.warning("recurso=parachute://faqs/corpus estado=fallida")
+            raise ResourceError("No fue posible leer el corpus de FAQs.") from None
+        logger.info("recurso=parachute://faqs/corpus estado=completada")
+        return contenido
 
     return server
 
