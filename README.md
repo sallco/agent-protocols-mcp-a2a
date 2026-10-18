@@ -6,6 +6,12 @@
 
 Sistema multiagente para consultas institucionales, evaluación meteorológica y reservas de paracaidismo. Integra un servidor MCP de herramientas, un agente público A2A y un cliente de terminal.
 
+## Video demostrativo
+
+https://github.com/user-attachments/assets/35bb2883-6972-4a91-98bb-881ccc6e46e6
+
+enlace: https://youtu.be/4zhleIeGruA
+
 ## Arquitectura
 
 ```mermaid
