@@ -24,3 +24,15 @@ def test_servicios_sin_clave_y_modelo_rechazado_antes_de_conectar(monkeypatch, c
 def test_fecha_historica_del_entorno_no_fija_el_reloj_real(monkeypatch):
     monkeypatch.setenv("BASE_DATE", "2026-09-18")
     assert get_settings().base_date is None
+
+
+def test_modelo_reutiliza_cliente_del_ciclo_de_vida(monkeypatch):
+    cliente = object()
+    factory = MagicMock()
+    monkeypatch.setattr(llm, "OpenAIChatCompletionsModel", factory)
+    monkeypatch.setattr(llm, "get_async_openai_client", MagicMock(side_effect=AssertionError))
+    modelo = llm.create_model("modelo-prueba", client=cliente)
+    assert modelo is factory.return_value
+    factory.assert_called_once_with(
+        model="modelo-prueba", openai_client=cliente, strict_feature_validation=False,
+    )

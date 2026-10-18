@@ -3,27 +3,33 @@
 from __future__ import annotations
 
 import asyncio
-import sys
+from typing import Any
 
-from agents import Agent, Runner
+from agents import Agent, Model, RunHooks, Runner
+from agents.mcp import MCPServer
 from core.llm import create_model
-from core.tools import (
-    iniciar_traza_herramientas,
-    limpiar_ultimo_comprobante,
-    obtener_ultimo_comprobante,
-    tool_agendar_cita,
-    tool_buscar_faqs,
-    tool_consultar_clima,
-    tool_consultar_disponibilidad,
-    tool_evaluar_condiciones,
-    tool_listar_citas,
-    tool_resolver_fecha,
-)
 
 
-def construir_agentes_centralizados(model_name: str | None = None) -> Agent:
-    """Construye la jerarquía centralizada de agentes conectada al modelo LLM."""
-    model = create_model(model_name)
+def construir_agentes_centralizados(
+    model_name: str | None = None, *, model: Model | None = None,
+    mcp_server: MCPServer | None = None, hooks: RunHooks | None = None,
+) -> Agent:
+    """Reutiliza el mismo MAS con herramientas locales o con un servidor MCP."""
+    model = model if model is not None else create_model(model_name)
+    herramientas_faqs, herramientas_clima, herramientas_agenda = [], [], []
+    servidores = [mcp_server] if mcp_server is not None else []
+    delegacion = {"hooks": hooks}
+    if mcp_server is None:
+        from core.tools import (
+            tool_agendar_cita, tool_buscar_faqs, tool_consultar_clima,
+            tool_consultar_disponibilidad, tool_evaluar_condiciones,
+            tool_listar_citas, tool_resolver_fecha,
+        )
+        herramientas_faqs = [tool_buscar_faqs]
+        herramientas_clima = [tool_resolver_fecha, tool_consultar_clima, tool_evaluar_condiciones]
+        herramientas_agenda = [tool_consultar_disponibilidad, tool_agendar_cita, tool_listar_citas]
+    else:
+        delegacion["failure_error_function"] = None
 
     # 1. Especialista en FAQs y conocimiento institucional
     agente_faqs = Agent(
@@ -38,7 +44,8 @@ def construir_agentes_centralizados(model_name: str | None = None) -> Agent:
             "ni realizar búsquedas adicionales. "
             "No definas umbrales de viento u operación técnica: eso corresponde a seguridad."
         ),
-        tools=[tool_buscar_faqs],
+        tools=herramientas_faqs,
+        mcp_servers=servidores,
         model=model,
     )
 
@@ -55,7 +62,8 @@ def construir_agentes_centralizados(model_name: str | None = None) -> Agent:
             "Reporta de forma concisa: temperatura, viento, ráfagas, lluvia, cobertura de nubes, veredicto (IDEAL, MARGINAL o PROHIBIDO) "
             "y el `id_evidencia` exacto para reservas."
         ),
-        tools=[tool_resolver_fecha, tool_consultar_clima, tool_evaluar_condiciones],
+        tools=herramientas_clima,
+        mcp_servers=servidores,
         model=model,
     )
 
@@ -70,7 +78,8 @@ def construir_agentes_centralizados(model_name: str | None = None) -> Agent:
             "Usa `agendar_cita` para registrar la cita formalmente. Si las condiciones están PROHIBIDAS, "
             "el sistema rechazará la cita determinísticamente; si están MARGINAL, incluye la advertencia de tándem experimentado."
         ),
-        tools=[tool_consultar_disponibilidad, tool_agendar_cita, tool_listar_citas],
+        tools=herramientas_agenda,
+        mcp_servers=servidores,
         model=model,
     )
 
@@ -94,14 +103,17 @@ def construir_agentes_centralizados(model_name: str | None = None) -> Agent:
             agente_faqs.as_tool(
                 tool_name="consultar_faqs",
                 tool_description="Consulta dudas institucionales y preguntas frecuentes de Parachute S.A.",
+                **delegacion,
             ),
             agente_clima.as_tool(
                 tool_name="consultar_clima_seguridad",
                 tool_description="Consulta pronóstico meteorológico oficial, fechas y veredictos de salto.",
+                **delegacion,
             ),
             agente_agenda.as_tool(
                 tool_name="gestionar_agenda",
                 tool_description="Verifica disponibilidad de franjas y agenda citas de salto con evidencia.",
+                **delegacion,
             ),
         ],
         model=model,
@@ -114,6 +126,10 @@ async def ejecutar_turno_centralizado(
     orquestador: Agent, entrada_usuario: str, sesion: Any = None
 ) -> tuple[str, str | None]:
     """Ejecuta un turno en la arquitectura centralizada y retorna (respuesta_llm, comprobante)."""
+    from core.tools import (
+        iniciar_traza_herramientas, limpiar_ultimo_comprobante, obtener_ultimo_comprobante,
+    )
+
     limpiar_ultimo_comprobante()
     iniciar_traza_herramientas()
     try:

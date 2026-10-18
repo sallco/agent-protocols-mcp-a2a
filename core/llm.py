@@ -85,10 +85,12 @@ def get_async_openai_client() -> AsyncOpenAI:
     )
 
 
-def create_model(model_name: str | None = None) -> OpenAIChatCompletionsModel:
+def create_model(
+    model_name: str | None = None, *, client: AsyncOpenAI | None = None
+) -> OpenAIChatCompletionsModel:
     """Crea una instancia de OpenAIChatCompletionsModel vinculada a AsyncOpenAI."""
     chosen_model = model_name or get_active_model()
-    client = get_async_openai_client()
+    client = client if client is not None else get_async_openai_client()
     return OpenAIChatCompletionsModel(
         model=chosen_model,
         openai_client=client,
