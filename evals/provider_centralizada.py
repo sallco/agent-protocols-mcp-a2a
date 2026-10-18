@@ -71,14 +71,15 @@ def call_api(prompt: str, options: dict[str, Any], context: dict[str, Any]) -> d
         agente = construir_agentes_centralizados(get_active_model())
         async def ejecutar_y_cerrar():
             try:
-                return await ejecutar_turno_centralizado(agente, query)
+                respuesta, comprobante = await ejecutar_turno_centralizado(agente, query)
+                traza = _normalizar_traza(obtener_traza_herramientas())
+                return respuesta, comprobante, traza
             finally:
                 # Los especialistas comparten el mismo modelo/cliente.
                 await agente.model._client.close()
 
         with isolated_agenda():
-            respuesta, comprobante = asyncio.run(ejecutar_y_cerrar())
-        traza = _normalizar_traza(obtener_traza_herramientas())
+            respuesta, comprobante, traza = asyncio.run(ejecutar_y_cerrar())
         appointment = None
         weather = None
         faq_ids: list[str] = []

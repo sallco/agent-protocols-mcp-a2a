@@ -9,6 +9,23 @@ from evals import provider_centralizada as provider
 from evals import isolated_agenda as isolation
 
 
+def test_provider_recoge_traza_antes_de_salir_del_contexto_asincrono(monkeypatch):
+    agent = SimpleNamespace(model=SimpleNamespace(_client=SimpleNamespace(close=AsyncMock())))
+    monkeypatch.setattr(provider, 'construir_agentes_centralizados', lambda _: agent)
+    monkeypatch.setattr(provider, 'isolated_agenda', nullcontext)
+
+    async def ejecutar(*args):
+        isolation.tools.iniciar_traza_herramientas()
+        isolation.tools.fn_resolver_fecha('mañana')
+        return 'respuesta', None
+
+    monkeypatch.setattr(provider, 'ejecutar_turno_centralizado', ejecutar)
+    result = provider.call_api('mañana', {}, {})['metadata']
+    assert result['error'] is None
+    assert result['tool_sequence'] == ['resolver_fecha']
+    assert result['tool_calls'][0]['resultado']['es_valida'] is True
+
+
 def test_evals_inyectan_reloj_historico_y_restauran_servicios(monkeypatch):
     original = isolation.tools._scheduling_service
     original_resolver = isolation.tools._date_resolver
