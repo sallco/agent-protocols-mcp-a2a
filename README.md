@@ -192,6 +192,11 @@ Puedes iniciar una sesión interactiva en cualquiera de las tres arquitecturas:
 *Nota: También puedes ejecutar directamente `uv run python arch_centralizada.py`, `uv run python arch_jerarquica.py` o `uv run python arch_descentralizada.py`.*
 
 #### 🧪 Simulación de Escenarios Meteorológicos con `--mock-clima`
+
+El reloj normal utiliza la fecha actual de Guatemala y se actualiza al cambiar
+de día. La antigua variable `BASE_DATE` ya no se utiliza: las pruebas y las
+evaluaciones históricas inyectan explícitamente el 18 de septiembre de 2026.
+
 Para probar determinísticamente los guardarraíles sin depender del clima real del día:
 ```bash
 # Simular condiciones óptimas (viento bajo, despejado, sin lluvia)

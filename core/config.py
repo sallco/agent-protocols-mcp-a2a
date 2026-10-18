@@ -31,7 +31,7 @@ class Settings:
     openmeteo_lon: float
     openmeteo_timezone: str
     forecast_max_days: int
-    base_date: str
+    base_date: str | None
     weather_eval_mode: str
 
     @classmethod
@@ -86,7 +86,6 @@ class Settings:
         openmeteo_lon = float(os.getenv("OPENMETEO_LON", "-90.771611"))
         openmeteo_timezone = os.getenv("OPENMETEO_TIMEZONE", "America/Guatemala")
         forecast_max_days = int(os.getenv("FORECAST_MAX_DAYS", "16"))
-        base_date = os.getenv("BASE_DATE", "2026-09-18")
         weather_eval_mode = os.getenv("WEATHER_EVAL_MODE", "operativo_horario")
 
         return cls(
@@ -103,7 +102,7 @@ class Settings:
             openmeteo_lon=openmeteo_lon,
             openmeteo_timezone=openmeteo_timezone,
             forecast_max_days=forecast_max_days,
-            base_date=base_date,
+            base_date=None,
             weather_eval_mode=weather_eval_mode,
         )
 

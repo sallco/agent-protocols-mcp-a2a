@@ -6,6 +6,7 @@ import re
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
 from typing import ClassVar
+from zoneinfo import ZoneInfo
 
 DIAS_SEMANA: dict[str, int] = {
     "lunes": 0,
@@ -59,16 +60,17 @@ class ResultadoFecha:
 class DateResolver:
     """Resuelve expresiones de fechas naturales y absolutas contra un reloj inyectable."""
 
-    DEFAULT_BASE_DATE: ClassVar[str] = "2026-09-18"
     VENTANA_DIAS: ClassVar[int] = 16  # Hoy hasta hoy + 15 inclusive
 
-    def __init__(self, base_date: date | str | None = None) -> None:
-        if base_date is None:
-            self.base_date = date.fromisoformat(self.DEFAULT_BASE_DATE)
-        elif isinstance(base_date, str):
-            self.base_date = date.fromisoformat(base_date)
-        else:
-            self.base_date = base_date
+    def __init__(
+        self, base_date: date | str | None = None, timezone: str = "America/Guatemala"
+    ) -> None:
+        self._base_date = date.fromisoformat(base_date) if isinstance(base_date, str) else base_date
+        self._timezone = ZoneInfo(timezone)
+
+    @property
+    def base_date(self) -> date:
+        return self._base_date or datetime.now(self._timezone).date()
 
     @property
     def max_date(self) -> date:

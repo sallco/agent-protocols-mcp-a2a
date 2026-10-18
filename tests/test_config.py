@@ -19,3 +19,8 @@ def test_servicios_sin_clave_y_modelo_rechazado_antes_de_conectar(monkeypatch, c
     with pytest.raises(ValueError, match="NVIDIA_API_KEY u OPENAI_API_KEY"):
         llm.create_model()
     factory.assert_not_called()
+
+
+def test_fecha_historica_del_entorno_no_fija_el_reloj_real(monkeypatch):
+    monkeypatch.setenv("BASE_DATE", "2026-09-18")
+    assert get_settings().base_date is None

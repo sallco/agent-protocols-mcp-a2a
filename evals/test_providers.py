@@ -6,6 +6,25 @@ from unittest.mock import AsyncMock, MagicMock
 
 from evals import grader_nvidia as grader
 from evals import provider_centralizada as provider
+from evals import isolated_agenda as isolation
+
+
+def test_evals_inyectan_reloj_historico_y_restauran_servicios(monkeypatch):
+    original = isolation.tools._scheduling_service
+    original_resolver = isolation.tools._date_resolver
+    monkeypatch.setattr(isolation, 'inicializar_esquema', MagicMock())
+    monkeypatch.setattr(isolation.psycopg, 'connect', MagicMock())
+
+    try:
+        with isolation.isolated_agenda():
+            assert isolation.tools._date_resolver.resolver('mañana').fecha_iso == '2026-09-19'
+            assert isolation.tools._scheduling_service.settings.base_date == '2026-09-18'
+            raise RuntimeError('fallo del caso evaluado')
+    except RuntimeError as error:
+        assert str(error) == 'fallo del caso evaluado'
+
+    assert isolation.tools._scheduling_service is original
+    assert isolation.tools._date_resolver is original_resolver
 
 
 def test_grader_uses_nvidia_and_closes_client(monkeypatch):

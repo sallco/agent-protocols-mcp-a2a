@@ -2,9 +2,39 @@
 
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, datetime, timezone
+
+import core.dates as dates
 
 from core.dates import DateResolver, FRANJAS_VALIDAS
+
+
+def test_reloj_real_sigue_fecha_de_guatemala_y_cambio_de_dia(monkeypatch) -> None:
+    class Reloj(datetime):
+        instante = datetime(2026, 10, 18, 3, tzinfo=timezone.utc)
+
+        @classmethod
+        def now(cls, tz=None):
+            return cls.instante.astimezone(tz)
+
+    monkeypatch.setattr(dates, "datetime", Reloj)
+    resolver = DateResolver()
+    assert resolver.resolver("hoy").fecha_iso == "2026-10-17"
+    assert resolver.resolver("mañana").fecha_iso == "2026-10-18"
+
+    Reloj.instante = datetime(2026, 10, 18, 6, tzinfo=timezone.utc)
+    assert resolver.resolver("hoy").fecha_iso == "2026-10-18"
+    assert resolver.max_date == date(2026, 11, 2)
+
+
+def test_reloj_inyectado_no_depende_de_fecha_actual(monkeypatch) -> None:
+    class SinReloj(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            raise AssertionError("Una fecha fija no debe consultar el reloj real")
+
+    monkeypatch.setattr(dates, "datetime", SinReloj)
+    assert DateResolver("2026-09-18").resolver("mañana").fecha_iso == "2026-09-19"
 
 
 def test_base_date_and_relative_expressions() -> None:

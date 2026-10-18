@@ -21,7 +21,7 @@ from core.weather import WeatherClient
 _faq_store = FAQStore()
 _weather_client = WeatherClient()
 _scheduling_service = SchedulingService()
-_date_resolver = DateResolver()
+_date_resolver = _scheduling_service.date_resolver
 
 # Registro en memoria del último comprobante generado en la sesión
 _ULTIMO_COMPROBANTE: str | None = None

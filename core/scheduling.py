@@ -31,7 +31,9 @@ class SchedulingService:
 
     def __init__(self, settings: Settings | None = None) -> None:
         self.settings = settings or get_settings()
-        self.date_resolver = DateResolver(base_date=self.settings.base_date)
+        self.date_resolver = DateResolver(
+            base_date=self.settings.base_date, timezone=self.settings.openmeteo_timezone
+        )
 
     def consultar_disponibilidad(self, fecha_iso: str) -> dict[str, Any]:
         """Devuelve las franjas horarias libres y ocupadas para una fecha dada."""
