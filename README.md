@@ -2,6 +2,8 @@
 
 Sistema Multiagente (MAS) para atención al cliente, evaluación meteorológica y calendarización de saltos en paracaídas para el evento nacional Guatemala 2026.
 
+La nueva etapa de protocolos está definida en el [diseño acordado de MCP y A2A](docs/diseno_mcp_a2a.md), con arquitectura, interfaces, hitos y criterios de aceptación. Su implementación se revisará paso a paso.
+
 Este proyecto abarca dos etapas clave del ciclo de desarrollo de software e inteligencia artificial:
 1. **HDT5 — Orquestación Multiagente**: Implementación, benchmark y análisis comparativo de **tres arquitecturas de orquestación**:
    - **Centralizada**: Un orquestador principal que delega en especialistas mediante `as_tool()`.
