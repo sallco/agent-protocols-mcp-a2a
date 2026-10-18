@@ -41,7 +41,7 @@ def get_api_key() -> str:
         api_key = os.getenv("NVIDIA_API_KEY") or os.getenv("OPENAI_API_KEY")
     else:
         api_key = os.getenv("OPENAI_API_KEY") or os.getenv("NVIDIA_API_KEY")
-    if not api_key:
+    if not api_key or not api_key.strip():
         raise ValueError("No se encontró NVIDIA_API_KEY u OPENAI_API_KEY en el entorno.")
     return api_key.strip()
 

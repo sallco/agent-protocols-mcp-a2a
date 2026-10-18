@@ -64,8 +64,6 @@ class Settings:
         min_sim_raw = os.getenv("MINIMUM_SIMILARITY", "0.6")
 
         missing: list[str] = []
-        if not api_key:
-            missing.append("NVIDIA_API_KEY u OPENAI_API_KEY")
         if not database_url:
             missing.append("DATABASE_URL")
         if missing:
@@ -94,7 +92,7 @@ class Settings:
         return cls(
             database_url=database_url,
             model=model,
-            api_key=api_key.strip(),
+            api_key=(api_key or "").strip(),
             base_url=base_url.strip(),
             model_fallbacks=model_fallbacks,
             faq_table=faq_table,
